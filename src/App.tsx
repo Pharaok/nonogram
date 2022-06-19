@@ -1,7 +1,8 @@
 import * as React from "react";
+import Nonogram from "./components/Nonogram";
 
 const App: React.FC = () => {
-  return <p>Hello World</p>;
+  return <Nonogram />;
 };
 
 export default App;
