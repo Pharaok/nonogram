@@ -1,5 +1,6 @@
 import * as React from "react";
 import "./Grid.scss";
+import Cell from "./Cell";
 
 type Props = {
   width: number;
@@ -13,7 +14,7 @@ const Grid: React.FC<Props> = (props) => {
       style={{ gridTemplateColumns: `repeat(${props.width}, auto)` }}
     >
       {[...Array(props.width * props.height)].map(() => {
-        return <div>.</div>;
+        return <Cell />;
       })}
     </div>
   );

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import Nonogram from "./components/Nonogram";
 
 const App: React.FC = () => {
