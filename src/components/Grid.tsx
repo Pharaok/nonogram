@@ -7,15 +7,37 @@ type Props = {
   height: number;
 };
 
+const generateBigInt = (s: number): BigInt => {
+  const seedArray = [];
+  let i = s;
+  while (i > 0) {
+    let b = Math.min(i, 15);
+    seedArray.push(
+      Math.floor(Math.random() * Math.pow(2, b))
+        .toString(2)
+        .padStart(b, "0")
+    );
+    i -= b;
+  }
+  return BigInt("0b" + seedArray.join(""));
+};
+
 const Grid: React.FC<Props> = (props) => {
+  const size = props.width * props.height;
+  const seed = generateBigInt(size);
+
   return (
     <div
       className="grid"
       style={{ gridTemplateColumns: `repeat(${props.width}, auto)` }}
     >
-      {[...Array(props.width * props.height)].map(() => {
-        return <Cell />;
-      })}
+      {seed
+        .toString(2)
+        .padStart(size, "0")
+        .split("")
+        .map((x, i) => {
+          return <Cell key={i} />;
+        })}
     </div>
   );
 };
