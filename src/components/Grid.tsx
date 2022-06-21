@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useMemo } from "react";
 import "./Grid.scss";
 import Cell from "./Cell";
 
@@ -22,18 +22,18 @@ const generateBigInt = (size: number): bigint => {
   return BigInt("0b" + seedArray.join(""));
 };
 
-const generateGrid = (width: number, height: number): boolean[][] => {
+const make2DArray = (width: number, height: number): boolean[][] => {
   let grid = Array(height);
   for (let i = 0; i < height; i++) {
     grid[i] = Array(width);
     for (let j = 0; j < width; j++) {
-      grid[i][j] = Math.floor(Math.random() * 2);
+      grid[i][j] = 0;
     }
   }
   return grid;
 };
 
-const generateHints = (grid: boolean[][]): number[][][] => {
+const makeHints = (grid: boolean[][]): number[][][] => {
   let rowHints = Array(grid.length);
   for (let i = 0; i < grid.length; ++i) {
     rowHints[i] = [];
@@ -46,7 +46,7 @@ const generateHints = (grid: boolean[][]): number[][][] => {
         consecutive = 0;
       }
     }
-    if (consecutive > 0) {
+    if (consecutive > 0 || rowHints[i].length == 0) {
       rowHints[i].push(consecutive);
     }
   }
@@ -63,7 +63,7 @@ const generateHints = (grid: boolean[][]): number[][][] => {
         consecutive = 0;
       }
     }
-    if (consecutive > 0) {
+    if (consecutive > 0 || columnHints[j].length == 0) {
       columnHints[j].push(consecutive);
     }
   }
@@ -72,25 +72,48 @@ const generateHints = (grid: boolean[][]): number[][][] => {
 };
 
 const Grid: React.FC<Props> = (props) => {
-  const grid = generateGrid(props.width, props.height);
-  const [rowHints, columnHints] = generateHints(grid);
-  console.log(rowHints, columnHints);
+  const [grid, setGrid] = useState(make2DArray(props.width, props.height));
+  const seed = useMemo(() => generateBigInt(props.width * props.height), []);
+  const solution = useMemo(() => {
+    return Array.from(grid, (x, i) => {
+      return Array.from(x, (y, j) => {
+        return Boolean(seed & BigInt(1 << (i * props.width + j)));
+      });
+    });
+  }, [seed]);
+  const [rowHints, columnHints] = makeHints(solution);
+
   return (
-    <table className="grid" border={1} cellSpacing={0}>
+    <table className="grid">
       <tbody>
         <tr>
           <td></td>
-          {columnHints.map((x) => {
-            return <td>{x}</td>;
+          {columnHints.map((x, i) => {
+            return <td key={i}>{x}</td>;
           })}
         </tr>
+
         {grid.map((x, i) => {
           return (
             <tr key={i}>
               <td>{rowHints[i]}</td>
               {x.map((y, j) => (
                 <td key={j}>
-                  <Cell />
+                  <Cell
+                    colored={grid[i][j]}
+                    onClick={() => {
+                      setGrid(
+                        grid.map((x, ii) => {
+                          return x.map((y, jj) => {
+                            if (ii == i && jj == j) {
+                              return !y;
+                            }
+                            return y;
+                          });
+                        })
+                      );
+                    }}
+                  />
                 </td>
               ))}
             </tr>

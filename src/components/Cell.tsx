@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { MouseEventHandler, useEffect, useState } from "react";
 import "./Cell.scss";
 
-const Cell: React.FC = () => {
-  let [colored, setColored] = useState(false);
+type Props = {
+  colored?: boolean;
+  onClick: MouseEventHandler;
+};
+
+const Cell: React.FC<Props> = ({ onClick, colored = false }) => {
   return (
-    <div
-      className={`cell ${colored ? "colored" : ""}`}
-      onClick={() => {
-        setColored(!colored);
-      }}
-    ></div>
+    <div className={`cell ${colored ? "colored" : ""}`} onClick={onClick}></div>
   );
 };
 
