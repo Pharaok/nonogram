@@ -72,19 +72,32 @@ const generateHints = (grid: boolean[][]): number[][][] => {
 };
 
 const Grid: React.FC<Props> = (props) => {
-  // const size = props.width * props.height;
   const grid = generateGrid(props.width, props.height);
   const [rowHints, columnHints] = generateHints(grid);
   console.log(rowHints, columnHints);
   return (
-    <div
-      className="grid"
-      style={{ gridTemplateColumns: `repeat(${props.width}, auto)` }}
-    >
-      {grid.map((x, i) => {
-        return x.map((y, j) => <Cell key={i * props.width + j} />);
-      })}
-    </div>
+    <table className="grid" border={1} cellSpacing={0}>
+      <tbody>
+        <tr>
+          <td></td>
+          {columnHints.map((x) => {
+            return <td>{x}</td>;
+          })}
+        </tr>
+        {grid.map((x, i) => {
+          return (
+            <tr key={i}>
+              <td>{rowHints[i]}</td>
+              {x.map((y, j) => (
+                <td key={j}>
+                  <Cell />
+                </td>
+              ))}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
 };
 
