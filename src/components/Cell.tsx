@@ -1,24 +1,30 @@
-import React, { MouseEventHandler } from "react";
+import React from "react";
 import "./Cell.scss";
 
 type Props = {
-  onClick: MouseEventHandler;
-  onContextMenu: MouseEventHandler;
-  colored?: boolean;
-  marked?: boolean;
+  cell: number;
+  setCell: (v: number) => void;
 };
 
-const Cell: React.FC<Props> = ({
-  onClick,
-  onContextMenu,
-  colored = false,
-  marked = false,
-}) => {
+export enum CellState {
+  Empty,
+  Colored = 1 << 0,
+  Marked = 1 << 1,
+}
+
+const Cell: React.FC<Props> = (props) => {
+  const colored = props.cell & CellState.Colored;
+  const marked = props.cell & CellState.Marked;
   return (
     <div
       className={`cell ${colored ? "colored" : ""} ${marked ? "marked" : ""}`}
-      onClick={onClick}
-      onContextMenu={onContextMenu}
+      onClick={(e) => {
+        props.setCell(colored ^ CellState.Colored);
+      }}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        props.setCell(marked ^ CellState.Marked);
+      }}
     ></div>
   );
 };

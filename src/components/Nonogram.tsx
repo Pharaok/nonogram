@@ -1,6 +1,6 @@
-import React, { useState, useMemo, Dispatch, SetStateAction } from "react";
+import React, { useState, useMemo } from "react";
 import "./Nonogram.scss";
-import Cell from "./Cell";
+import Cell, { CellState } from "./Cell";
 
 const generateBigInt = (size: number): bigint => {
   const seedArray = [];
@@ -15,36 +15,6 @@ const generateBigInt = (size: number): bigint => {
     i -= b;
   }
   return BigInt("0b" + seedArray.join(""));
-};
-
-const make2DArray = (width: number, height: number): number[][] => {
-  let grid = Array(height);
-  for (let i = 0; i < height; i++) {
-    grid[i] = Array(width);
-    for (let j = 0; j < width; j++) {
-      grid[i][j] = 0;
-    }
-  }
-  return grid;
-};
-
-const set2DState = (
-  state: any[][],
-  setState: Dispatch<SetStateAction<any[][]>>,
-  i: number,
-  j: number,
-  fn: Function
-) => {
-  setState(
-    state.map((x, ii) => {
-      return x.map((y, jj) => {
-        if (ii === i && jj === j) {
-          return fn(y);
-        }
-        return y;
-      });
-    })
-  );
 };
 
 const makeHints = (grid: number[][]): number[][][] => {
@@ -88,7 +58,10 @@ const makeHints = (grid: number[][]): number[][][] => {
 const validateGrid = (grid: number[][], solution: number[][]): boolean => {
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[0].length; j++) {
-      if ((grid[i][j] & 1) != (solution[i][j] & 1)) {
+      if (
+        (grid[i][j] & CellState.Colored) !=
+        (solution[i][j] & CellState.Colored)
+      ) {
         return false;
       }
     }
@@ -96,19 +69,19 @@ const validateGrid = (grid: number[][], solution: number[][]): boolean => {
   return true;
 };
 
-enum CellState {
-  Empty,
-  Colored = 1 << 0,
-  Marked = 1 << 1,
-}
-
 type Props = {
   width: number;
   height: number;
 };
 
 const Nonogram: React.FC<Props> = (props) => {
-  const [grid, setGrid] = useState(make2DArray(props.width, props.height));
+  const [grid, setGrid] = useState(() => {
+    let rows = [];
+    for (let i = 0; i < props.height; i++) {
+      rows.push(Array.from(Array(props.width), () => 0));
+    }
+    return rows;
+  });
   const seed = useMemo(
     () => generateBigInt(props.width * props.height),
     [props]
@@ -125,7 +98,6 @@ const Nonogram: React.FC<Props> = (props) => {
   if (validateGrid(grid, solution)) {
     alert("You won!");
   }
-  console.log(solution);
 
   return (
     <table className="nonogram">
@@ -137,33 +109,20 @@ const Nonogram: React.FC<Props> = (props) => {
           })}
         </tr>
 
-        {grid.map((x, i) => {
+        {grid.map((rows, y) => {
           return (
-            <tr key={i}>
-              <td>{rowHints[i]}</td>
-              {x.map((y, j) => (
-                <td key={j}>
+            <tr key={y}>
+              <td>{rowHints[y]}</td>
+              {rows.map((cell, x) => (
+                <td key={x}>
                   <Cell
-                    colored={Boolean(grid[i][j] & CellState.Colored)}
-                    marked={Boolean(grid[i][j] & CellState.Marked)}
-                    onClick={() => {
-                      set2DState(
-                        grid,
-                        setGrid,
-                        i,
-                        j,
-                        (x: number) => x ^ CellState.Colored
+                    cell={grid[y][x]}
+                    setCell={(v: number) => {
+                      const newGrid = grid.map((row) =>
+                        row.map((cell) => cell)
                       );
-                    }}
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      set2DState(
-                        grid,
-                        setGrid,
-                        i,
-                        j,
-                        (x: number) => x ^ CellState.Marked
-                      );
+                      newGrid[y][x] = v;
+                      setGrid(newGrid);
                     }}
                   />
                 </td>
