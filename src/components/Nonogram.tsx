@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import "./Nonogram.scss";
 import Cell, { CellState } from "./Cell";
+import Clue from "./Clue";
 
 const generateBigInt = (size: number): bigint => {
   const seedArray = [];
@@ -104,15 +105,21 @@ const Nonogram: React.FC<Props> = (props) => {
       <tbody>
         <tr>
           <td></td>
-          {columnHints.map((x, i) => {
-            return <td key={i}>{x}</td>;
+          {columnHints.map((hint, i) => {
+            return (
+              <td key={i} style={{ verticalAlign: "bottom" }}>
+                <Clue clue={hint} orientation="vertical" />
+              </td>
+            );
           })}
         </tr>
 
         {grid.map((rows, y) => {
           return (
             <tr key={y}>
-              <td>{rowHints[y]}</td>
+              <td>
+                <Clue clue={rowHints[y]} orientation="horizontal" />
+              </td>
               {rows.map((cell, x) => (
                 <td key={x}>
                   <Cell

@@ -1,0 +1,16 @@
+.clue {
+  font-size: 25px;
+  margin: 6px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+
+.horizontal {
+  gap: 12px;
+}
+
+.vertical {
+  flex-direction: column;
+}
