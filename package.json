@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/index.tsx",
-  "scripts": {
-    "build": "npx webpack",
-    "serve": "npx webpack serve --mode=development"
-  },
   "author": "Pharaok",
   "license": "ISC",
+  "homepage": "https://pharaok.github.io/nonogram",
+  "scripts": {
+    "build": "webpack",
+    "serve": "webpack serve --mode=development",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -17,6 +20,7 @@
     "@types/react": "^18.0.14",
     "@types/react-dom": "^18.0.5",
     "css-loader": "^6.7.1",
+    "gh-pages": "^4.0.0",
     "html-webpack-plugin": "^5.5.0",
     "sass": "^1.52.3",
     "sass-loader": "^13.0.0",
