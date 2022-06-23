@@ -24,6 +24,10 @@ const Clue: React.FC<Props> = (props) => {
       consecutive = 0;
     }
   });
+  let i = props.clue.indexOf(consecutive, prev + 1);
+  if (i !== -1) {
+    solved[i] = true;
+  }
 
   return (
     <div className={`clue ${props.orientation}`}>
