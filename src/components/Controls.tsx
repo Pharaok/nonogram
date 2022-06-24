@@ -1,11 +1,15 @@
-import produce from "immer";
 import React, { useContext } from "react";
+import produce, { applyPatches, Patch } from "immer";
+import "./Controls.scss";
 import GridContext from "./GridContext";
+
+let changes: Patch[] = [];
+let inverseChanges: Patch[] = [];
 
 const Controls = () => {
   const { grid, setGrid } = useContext(GridContext);
   return (
-    <div>
+    <div className="controls">
       <button
         onClick={() => {
           setGrid(
