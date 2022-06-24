@@ -18,44 +18,6 @@ const generateBigInt = (size: number): bigint => {
   return BigInt("0b" + seedArray.join(""));
 };
 
-const makeClues = (grid: number[][]): number[][][] => {
-  let rowHints = [Array(grid.length)];
-  for (let i = 0; i < grid.length; ++i) {
-    rowHints[i] = [];
-    let consecutive = 0;
-    for (let j = 0; j < grid[0].length; ++j) {
-      if (grid[i][j]) {
-        consecutive += 1;
-      } else if (consecutive > 0) {
-        rowHints[i].push(consecutive);
-        consecutive = 0;
-      }
-    }
-    if (consecutive > 0 || rowHints[i].length == 0) {
-      rowHints[i].push(consecutive);
-    }
-  }
-
-  let columnHints = Array(grid[0].length);
-  for (let j = 0; j < grid[0].length; ++j) {
-    columnHints[j] = [];
-    let consecutive = 0;
-    for (let i = 0; i < grid.length; ++i) {
-      if (grid[i][j]) {
-        consecutive += 1;
-      } else if (consecutive > 0) {
-        columnHints[j].push(consecutive);
-        consecutive = 0;
-      }
-    }
-    if (consecutive > 0 || columnHints[j].length == 0) {
-      columnHints[j].push(consecutive);
-    }
-  }
-
-  return [rowHints, columnHints];
-};
-
 type Props = {
   width: number;
   height: number;
@@ -80,8 +42,6 @@ const Nonogram: React.FC<Props> = (props) => {
       });
     });
   }, [seed]);
-  const [rowClues, columnClues] = makeClues(solution);
-  console.log(rowClues, columnClues);
 
   // if (validateGrid(grid, solution)) {
   //   alert("You won!");
@@ -93,13 +53,13 @@ const Nonogram: React.FC<Props> = (props) => {
         <tr>
           <td></td>
 
-          {columnClues.map((hint, i) => {
+          {grid[0].map((row, j) => {
             return (
               // TODO: find alternative to verticalAlign
-              <td key={i} style={{ verticalAlign: "bottom" }}>
+              <td key={j} style={{ verticalAlign: "bottom" }}>
                 <Clue
-                  clue={hint}
-                  cells={grid.map((row) => row[i])}
+                  cells={grid.map((row) => row[j])}
+                  solution={solution.map((row) => row[j])}
                   orientation="vertical"
                 />
               </td>
@@ -111,7 +71,11 @@ const Nonogram: React.FC<Props> = (props) => {
           return (
             <tr key={y}>
               <td>
-                <Clue clue={rowClues[y]} cells={row} orientation="horizontal" />
+                <Clue
+                  cells={row}
+                  solution={solution[y]}
+                  orientation="horizontal"
+                />
               </td>
 
               {row.map((cell, x) => (

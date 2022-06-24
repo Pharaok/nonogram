@@ -3,20 +3,34 @@ import { CellState } from "./Cell";
 import "./Clue.scss";
 
 type Props = {
-  clue: number[];
   cells: number[];
+  solution: number[];
   orientation: "vertical" | "horizontal";
 };
 
 const Clue: React.FC<Props> = (props) => {
-  const solved: boolean[] = Array.from(props.clue, () => false);
+  const clues: number[] = [];
   let consecutive = 0;
+  props.solution.forEach((cell) => {
+    if (cell & CellState.Colored) {
+      consecutive += 1;
+    } else if (consecutive > 0) {
+      clues.push(consecutive);
+      consecutive = 0;
+    }
+  });
+  if (!clues.length || consecutive > 0) {
+    clues.push(consecutive);
+  }
+
+  const solved: boolean[] = Array.from(clues, () => false);
+  consecutive = 0;
   let prev = -1;
   props.cells.forEach((cell) => {
     if (cell & CellState.Colored) {
       consecutive += 1;
     } else if (consecutive > 0) {
-      let i = props.clue.indexOf(consecutive, prev + 1);
+      let i = clues.indexOf(consecutive, prev + 1);
       if (i !== -1) {
         solved[i] = true;
         prev = i;
@@ -24,14 +38,14 @@ const Clue: React.FC<Props> = (props) => {
       consecutive = 0;
     }
   });
-  let i = props.clue.indexOf(consecutive, prev + 1);
+  let i = clues.indexOf(consecutive, prev + 1);
   if (i !== -1) {
     solved[i] = true;
   }
 
   return (
     <div className={`clue ${props.orientation}`}>
-      {props.clue.map((clue, i) => {
+      {clues.map((clue, i) => {
         return (
           <span key={i} className={solved[i] ? "solved" : ""}>
             {clue}
