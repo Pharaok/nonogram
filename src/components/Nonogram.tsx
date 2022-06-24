@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Controls from "./Controls";
 import Grid from "./Grid";
 import GridContext from "./GridContext";
 
@@ -20,6 +21,7 @@ const Nonogram: React.FC<Props> = (props) => {
     <GridContext.Provider value={{ grid, setGrid }}>
       <div>
         <Grid gridState={[grid, setGrid]} />
+        <Controls></Controls>
       </div>
     </GridContext.Provider>
   );
