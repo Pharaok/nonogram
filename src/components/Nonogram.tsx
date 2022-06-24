@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import Grid from "./Grid";
+import GridContext from "./GridContext";
 
 type Props = {
   width: number;
@@ -7,10 +8,20 @@ type Props = {
 };
 
 const Nonogram: React.FC<Props> = (props) => {
+  const [grid, setGrid] = useState(() => {
+    let rows = [];
+    for (let i = 0; i < props.height; i++) {
+      rows.push(Array.from(Array(props.width), () => 0));
+    }
+    return rows;
+  });
+
   return (
-    <div>
-      <Grid width={props.width} height={props.height} />
-    </div>
+    <GridContext.Provider value={{ grid, setGrid }}>
+      <div>
+        <Grid gridState={[grid, setGrid]} />
+      </div>
+    </GridContext.Provider>
   );
 };
 

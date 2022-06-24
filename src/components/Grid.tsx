@@ -1,5 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
+import produce from "immer";
 import "./Grid.scss";
+import GridContext from "./GridContext";
 import Cell from "./Cell";
 import Clue from "./Clue";
 
@@ -19,26 +21,20 @@ const generateBigInt = (size: number): bigint => {
 };
 
 type Props = {
-  width: number;
-  height: number;
+  gridState: [number[][], React.Dispatch<React.SetStateAction<number[][]>>];
 };
 
 const Grid: React.FC<Props> = (props) => {
-  const [grid, setGrid] = useState(() => {
-    let rows = [];
-    for (let i = 0; i < props.height; i++) {
-      rows.push(Array.from(Array(props.width), () => 0));
-    }
-    return rows;
-  });
-  const seed = useMemo(
-    () => generateBigInt(props.width * props.height),
-    [props.width, props.height]
-  );
+  const { grid, setGrid } = useContext(GridContext);
+  const height = grid.length;
+  const width = grid[0].length;
+
+  // Generate solution
+  const seed = useMemo(() => generateBigInt(width * height), [width, height]);
   const solution = useMemo(() => {
     return Array.from(grid, (x, i) => {
       return Array.from(x, (y, j) => {
-        return Number(Boolean(seed & (1n << BigInt(i * props.width + j))));
+        return Number(Boolean(seed & (1n << BigInt(i * width + j))));
       });
     });
   }, [seed]);
@@ -53,7 +49,7 @@ const Grid: React.FC<Props> = (props) => {
         <tr>
           <td></td>
 
-          {grid[0].map((row, j) => {
+          {grid[0].map((cell, j) => {
             return (
               // TODO: find alternative to verticalAlign
               <td key={j} style={{ verticalAlign: "bottom" }}>
@@ -83,11 +79,11 @@ const Grid: React.FC<Props> = (props) => {
                   <Cell
                     cell={grid[y][x]}
                     setCell={(v: number) => {
-                      const newGrid = grid.map((row) =>
-                        row.map((cell) => cell)
+                      setGrid(
+                        produce(grid, (grid) => {
+                          grid[y][x] = v;
+                        })
                       );
-                      newGrid[y][x] = v;
-                      setGrid(newGrid);
                     }}
                   />
                 </td>
