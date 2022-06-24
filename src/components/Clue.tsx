@@ -8,10 +8,11 @@ type Props = {
   orientation: "vertical" | "horizontal";
 };
 
-const Clue: React.FC<Props> = (props) => {
+const Clue: React.FC<Props> = ({ cells, solution, orientation }) => {
+  // Generate clues from solution
   const clues: number[] = [];
   let consecutive = 0;
-  props.solution.forEach((cell) => {
+  solution.forEach((cell) => {
     if (cell & CellState.Colored) {
       consecutive += 1;
     } else if (consecutive > 0) {
@@ -26,7 +27,7 @@ const Clue: React.FC<Props> = (props) => {
   const solved: boolean[] = Array.from(clues, () => false);
   consecutive = 0;
   let prev = -1;
-  props.cells.forEach((cell) => {
+  cells.forEach((cell) => {
     if (cell & CellState.Colored) {
       consecutive += 1;
     } else if (consecutive > 0) {
@@ -44,7 +45,7 @@ const Clue: React.FC<Props> = (props) => {
   }
 
   return (
-    <div className={`clue ${props.orientation}`}>
+    <div className={`clue ${orientation}`}>
       {clues.map((clue, i) => {
         return (
           <span key={i} className={solved[i] ? "solved" : ""}>
