@@ -1,7 +1,7 @@
 .controls {
   padding: 20px;
   border-radius: 10px;
-  background-color: hsl(200, 30%, 80%);
+  background-color: hsl(20, 100%, 65%);
 
   button {
     width: 50px;
@@ -12,6 +12,9 @@
     background-color: hsl(200, 0%, 90%);
     &:hover {
       background-color: hsl(200, 0%, 85%);
+    }
+    &:active {
+      background-color: hsl(200, 0%, 84%);
     }
   }
 }

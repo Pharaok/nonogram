@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import produce from "immer";
 import "./Grid.scss";
 import GridContext from "./GridContext";
@@ -30,14 +30,16 @@ const Grid: React.FC<Props> = (props) => {
   const width = grid[0].length;
 
   // Generate solution
-  const seed = useMemo(() => generateBigInt(width * height), [width, height]);
-  const solution = useMemo(() => {
-    return Array.from(grid, (x, i) => {
-      return Array.from(x, (y, j) => {
-        return Number(Boolean(seed & (1n << BigInt(i * width + j))));
-      });
-    });
-  }, [seed]);
+  const [seed, setSeed] = useState(generateBigInt(width * height));
+  const solution = useMemo(
+    () =>
+      grid.map((row, y) =>
+        row.map((cell, x) =>
+          Number(Boolean(seed & (1n << BigInt(y * width + x))))
+        )
+      ),
+    [seed]
+  );
 
   // if (validateGrid(grid, solution)) {
   //   alert("You won!");
