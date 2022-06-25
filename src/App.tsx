@@ -1,8 +1,15 @@
 import React from "react";
-import Nonogram from "./components/Nonogram";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Root from "./components/routes/Root";
 
 const App: React.FC = () => {
-  return <Nonogram width={10} height={10} />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Root />} />
+      </Routes>
+    </BrowserRouter>
+  );
 };
 
 export default App;

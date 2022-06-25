@@ -1,6 +1,6 @@
 import produce, { applyPatches, Patch } from "immer";
 import { CellState } from "../Cell";
-import { base64ToBigInt } from "../helpers";
+import { base64ToBigInt } from "../../helpers";
 
 const TOGGLE_COLOR = "TOGGLE_COLOR";
 const CLEAR = "CLEAR";

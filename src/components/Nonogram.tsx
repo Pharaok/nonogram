@@ -5,7 +5,7 @@ import store from "./store";
 import "./Nonogram.scss";
 import Controls from "./Controls";
 import Grid from "./Grid";
-import { bigIntToBase64, randomBigInt } from "./helpers";
+import { bigIntToBase64, randomBigInt } from "../helpers";
 
 interface Props {
   seed?: string;
@@ -15,6 +15,7 @@ interface Props {
 
 const Nonogram: React.FC<Props> = ({ seed, width, height }) => {
   let s = seed || bigIntToBase64(randomBigInt(width * height));
+
   return (
     <Provider store={store}>
       <div className="nonogram">
