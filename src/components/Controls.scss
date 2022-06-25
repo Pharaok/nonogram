@@ -1,20 +1,50 @@
 .controls {
   padding: 20px;
   border-radius: 10px;
-  background-color: hsl(20, 100%, 65%);
+  background-color: hsl(220, 100%, 90%);
 
   button {
     width: 50px;
     height: 50px;
     margin: 5px;
     padding: 0;
-    border-radius: 5px;
     background-color: hsl(200, 0%, 90%);
     &:hover {
       background-color: hsl(200, 0%, 85%);
     }
     &:active {
       background-color: hsl(200, 0%, 84%);
+    }
+  }
+  form {
+    display: flex;
+    align-items: center;
+
+    input {
+      height: 40px;
+      width: 60px;
+      border-radius: 5px;
+    }
+    button {
+      border-radius: 5px;
+    }
+    div {
+      display: inline-block;
+      white-space: nowrap;
+      input {
+        width: 200px;
+        height: 40px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      button {
+        width: 40px;
+        height: 40px;
+        margin: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+      margin: 10px;
     }
   }
 }

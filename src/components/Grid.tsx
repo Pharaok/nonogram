@@ -6,14 +6,9 @@ import Cell from "./Cell";
 import Clue from "./Clue";
 import { useDispatch } from "react-redux";
 import { State } from "./store";
-import { resize, toggleColor } from "./reducers/grid";
+import { generate, toggleColor } from "./slices/grid";
 
-interface Props {
-  width: number;
-  height: number;
-}
-
-const Grid: React.FC<Props> = ({ width, height }) => {
+const Grid: React.FC = () => {
   const grid = useSelector((state: State) => state.nonogram.grid);
   const solution = useSelector((state: State) => state.nonogram.solution);
   const dispatch = useDispatch();
@@ -21,10 +16,6 @@ const Grid: React.FC<Props> = ({ width, height }) => {
   // if (validateGrid(grid, solution)) {
   //   alert("You won!");
   // }
-
-  useEffect(() => {
-    dispatch(resize(height, width));
-  }, []);
 
   return (
     <table className="grid">

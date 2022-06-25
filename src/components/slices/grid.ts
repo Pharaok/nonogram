@@ -1,10 +1,10 @@
 import produce, { applyPatches, Patch } from "immer";
 import { CellState } from "../Cell";
-import { generateBigInt } from "../helpers";
+import { base64ToBigInt } from "../helpers";
 
 const TOGGLE_COLOR = "TOGGLE_COLOR";
 const CLEAR = "CLEAR";
-const RESIZE = "RESIZE";
+const GENERATE = "GENERATE";
 
 interface ToggleColoredAction {
   type: typeof TOGGLE_COLOR;
@@ -16,8 +16,11 @@ interface ClearAction {
 }
 
 interface ResizeAction {
-  type: typeof RESIZE;
-  payload: [number, number];
+  type: typeof GENERATE;
+  payload: {
+    seed: string;
+    size: [number, number];
+  };
 }
 
 interface State {
@@ -37,9 +40,9 @@ export const toggleColor = (y: number, x: number) => ({
   type: TOGGLE_COLOR,
   payload: [y, x],
 });
-export const resize = (height: number, width: number) => ({
-  type: RESIZE,
-  payload: [height, width],
+export const generate = (seed: string, height: number, width: number) => ({
+  type: GENERATE,
+  payload: { seed, size: [height, width] },
 });
 
 const grid = (prevState = initialState, action: Actions) => {
@@ -54,18 +57,22 @@ const grid = (prevState = initialState, action: Actions) => {
           row.fill(0);
         });
         break;
-      case RESIZE:
-        const [height, width] = action.payload;
+      case GENERATE:
+        const [height, width] = action.payload.size;
         const newGrid = [];
         for (let i = 0; i < height; i++) {
           newGrid.push(Array.from(Array(width), () => 0));
         }
         draft.grid = newGrid;
 
-        const seed = generateBigInt(width * height);
         draft.solution = newGrid.map((row, y) =>
           row.map((cell, x) =>
-            Number(Boolean(seed & (1n << BigInt(y * width + x))))
+            Number(
+              Boolean(
+                base64ToBigInt(action.payload.seed) &
+                  (1n << BigInt(y * width + x))
+              )
+            )
           )
         );
       default:
