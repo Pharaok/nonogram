@@ -1,15 +1,19 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import produce from "immer";
 
 import "./Grid.scss";
 import Cell from "./Cell";
 import Clue from "./Clue";
 import { useDispatch } from "react-redux";
 import { State } from "./store";
-import { toggleColor } from "./reducers/grid";
+import { resize, toggleColor } from "./reducers/grid";
 
-const Grid: React.FC = () => {
+interface Props {
+  width: number;
+  height: number;
+}
+
+const Grid: React.FC<Props> = ({ width, height }) => {
   const grid = useSelector((state: State) => state.nonogram.grid);
   const solution = useSelector((state: State) => state.nonogram.solution);
   const dispatch = useDispatch();
@@ -17,6 +21,10 @@ const Grid: React.FC = () => {
   // if (validateGrid(grid, solution)) {
   //   alert("You won!");
   // }
+
+  useEffect(() => {
+    dispatch(resize(height, width));
+  }, []);
 
   return (
     <table className="grid">

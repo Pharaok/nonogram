@@ -11,11 +11,11 @@ interface Props {
   height: number;
 }
 
-const Nonogram: React.FC<Props> = (props) => {
+const Nonogram: React.FC<Props> = ({ width, height }) => {
   return (
     <Provider store={store}>
       <div className="nonogram">
-        <Grid />
+        <Grid width={width} height={height} />
         <Controls />
       </div>
     </Provider>
