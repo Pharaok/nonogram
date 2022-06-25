@@ -1,30 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
+import { Provider } from "react-redux";
+import store from "./store";
+
 import "./Nonogram.scss";
 import Controls from "./Controls";
 import Grid from "./Grid";
-import GridContext from "./GridContext";
 
-type Props = {
+interface Props {
   width: number;
   height: number;
-};
+}
 
 const Nonogram: React.FC<Props> = (props) => {
-  const [grid, setGrid] = useState(() => {
-    let rows = [];
-    for (let i = 0; i < props.height; i++) {
-      rows.push(Array.from(Array(props.width), () => 0));
-    }
-    return rows;
-  });
-
   return (
-    <GridContext.Provider value={{ grid, setGrid }}>
+    <Provider store={store}>
       <div className="nonogram">
-        <Grid gridState={[grid, setGrid]} />
+        <Grid />
         <Controls />
       </div>
-    </GridContext.Provider>
+    </Provider>
   );
 };
 

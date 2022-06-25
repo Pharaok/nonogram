@@ -1,27 +1,27 @@
-import React, { useContext } from "react";
-import produce, { applyPatches, Patch } from "immer";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
 import "./Controls.scss";
-import GridContext from "./GridContext";
-
-let changes: Patch[] = [];
-let inverseChanges: Patch[] = [];
+import { clear, resize } from "./reducers/grid";
+import { State } from "./store";
 
 const Controls = () => {
-  const { grid, setGrid } = useContext(GridContext);
+  const grid = useSelector((state: State) => state.nonogram);
+  const dispatch = useDispatch();
   return (
     <div className="controls">
       <button
         onClick={() => {
-          setGrid(
-            produce(grid, (grid) => {
-              grid.forEach((row) => {
-                row.fill(0);
-              });
-            })
-          );
+          dispatch(clear());
         }}
       >
         Clear
+      </button>
+      <button
+        onClick={() => {
+          dispatch(resize(10, 10));
+        }}
+      >
+        Resize
       </button>
     </div>
   );

@@ -1,45 +1,18 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import produce from "immer";
+
 import "./Grid.scss";
-import GridContext from "./GridContext";
 import Cell from "./Cell";
 import Clue from "./Clue";
+import { useDispatch } from "react-redux";
+import { State } from "./store";
+import { toggleColor } from "./reducers/grid";
 
-const generateBigInt = (size: number): bigint => {
-  const seedArray = [];
-  let i = size;
-  while (i > 0) {
-    let b = Math.min(i, 15);
-    seedArray.push(
-      Math.floor(Math.random() * Math.pow(2, b))
-        .toString(2)
-        .padStart(b, "0")
-    );
-    i -= b;
-  }
-  return BigInt("0b" + seedArray.join(""));
-};
-
-type Props = {
-  gridState: [number[][], React.Dispatch<React.SetStateAction<number[][]>>];
-};
-
-const Grid: React.FC<Props> = (props) => {
-  const { grid, setGrid } = useContext(GridContext);
-  const height = grid.length;
-  const width = grid[0].length;
-
-  // Generate solution
-  const [seed, setSeed] = useState(generateBigInt(width * height));
-  const solution = useMemo(
-    () =>
-      grid.map((row, y) =>
-        row.map((cell, x) =>
-          Number(Boolean(seed & (1n << BigInt(y * width + x))))
-        )
-      ),
-    [seed]
-  );
+const Grid: React.FC = () => {
+  const grid = useSelector((state: State) => state.nonogram.grid);
+  const solution = useSelector((state: State) => state.nonogram.solution);
+  const dispatch = useDispatch();
 
   // if (validateGrid(grid, solution)) {
   //   alert("You won!");
@@ -81,11 +54,7 @@ const Grid: React.FC<Props> = (props) => {
                   <Cell
                     cell={grid[y][x]}
                     setCell={(v: number) => {
-                      setGrid(
-                        produce(grid, (grid) => {
-                          grid[y][x] = v;
-                        })
-                      );
+                      dispatch(toggleColor(y, x));
                     }}
                   />
                 </td>
