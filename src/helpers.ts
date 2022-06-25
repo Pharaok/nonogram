@@ -30,3 +30,20 @@ export const base64ToBigInt = (s: string) => {
   }
   return n;
 };
+
+export const createClues = (cells: number[]) => {
+  const clues: number[] = [];
+  let consecutive = 0;
+  cells.forEach((cell) => {
+    if (cell) {
+      consecutive += 1;
+    } else if (consecutive > 0) {
+      clues.push(consecutive);
+      consecutive = 0;
+    }
+  });
+  if (!clues.length || consecutive > 0) {
+    clues.push(consecutive);
+  }
+  return clues;
+};

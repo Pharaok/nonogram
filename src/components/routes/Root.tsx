@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
+import { Provider } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { bigIntToBase64, randomBigInt } from "../../helpers";
 import Nonogram from "../Nonogram";
+import store from "../store";
 
 const Root = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -10,15 +12,19 @@ const Root = () => {
   const seed =
     searchParams.get("seed") || bigIntToBase64(randomBigInt(width * height));
   useEffect(() => {
-    searchParams.set("seed", seed);
-    searchParams.set("width", width.toString());
-    searchParams.set("height", height.toString());
+    setSearchParams({
+      seed,
+      width: width.toString(),
+      height: height.toString(),
+    });
   }, []);
 
   return (
-    <div>
-      <Nonogram width={width} height={height} seed={seed} />
-    </div>
+    <Provider store={store}>
+      <div>
+        <Nonogram width={width} height={height} seed={seed} />
+      </div>
+    </Provider>
   );
 };
 

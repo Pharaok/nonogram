@@ -30,7 +30,7 @@ interface State {
 
 const initialState: State = {
   grid: [[0]],
-  solution: [[0]],
+  solution: [[1]],
 };
 
 type Actions = ClearAction | ToggleColoredAction | ResizeAction;

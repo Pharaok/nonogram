@@ -25,10 +25,6 @@ const Controls: React.FC<Props> = (props) => {
     }
   }, [width, height]);
 
-  useEffect(() => {
-    dispatch(generate(seed, height, width));
-  }, []);
-
   const dispatch = useDispatch();
   return (
     // TODO: Add button icons

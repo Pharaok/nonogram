@@ -6,16 +6,12 @@ import Cell from "./Cell";
 import Clue from "./Clue";
 import { useDispatch } from "react-redux";
 import { State } from "./store";
-import { generate, toggleColor } from "./slices/grid";
+import { toggleColor } from "./slices/grid";
 
 const Grid: React.FC = () => {
   const grid = useSelector((state: State) => state.nonogram.grid);
   const solution = useSelector((state: State) => state.nonogram.solution);
   const dispatch = useDispatch();
-
-  // if (validateGrid(grid, solution)) {
-  //   alert("You won!");
-  // }
 
   return (
     <table className="grid">

@@ -1,4 +1,5 @@
 import React from "react";
+import { createClues } from "../helpers";
 import { CellState } from "./Cell";
 import "./Clue.scss";
 
@@ -10,39 +11,19 @@ type Props = {
 
 const Clue: React.FC<Props> = ({ cells, solution, orientation }) => {
   // Generate clues from solution
-  const clues: number[] = [];
-  let consecutive = 0;
-  solution.forEach((cell) => {
-    if (cell & CellState.Colored) {
-      consecutive += 1;
-    } else if (consecutive > 0) {
-      clues.push(consecutive);
-      consecutive = 0;
-    }
-  });
-  if (!clues.length || consecutive > 0) {
-    clues.push(consecutive);
-  }
+  const clues = createClues(solution);
+  const currClues = createClues(cells);
 
-  const solved: boolean[] = Array.from(clues, () => false);
-  consecutive = 0;
+  let i = -1;
   let prev = -1;
-  cells.forEach((cell) => {
-    if (cell & CellState.Colored) {
-      consecutive += 1;
-    } else if (consecutive > 0) {
-      let i = clues.indexOf(consecutive, prev + 1);
-      if (i !== -1) {
-        solved[i] = true;
-        prev = i;
-      }
-      consecutive = 0;
+  const solved: boolean[] = [];
+  currClues.forEach((clue) => {
+    i = clues.indexOf(clue, prev + 1);
+    if (i !== -1) {
+      prev = i;
+      solved[i] = true;
     }
   });
-  let i = clues.indexOf(consecutive, prev + 1);
-  if (i !== -1) {
-    solved[i] = true;
-  }
 
   return (
     <div className={`clue ${orientation}`}>
