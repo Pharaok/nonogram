@@ -6,7 +6,7 @@ import Cell from "./Cell";
 import Clue from "./Clue";
 import { useDispatch } from "react-redux";
 import { State } from "./store";
-import { toggleColor } from "./slices/grid";
+import { color } from "./slices/grid";
 
 const Grid: React.FC = () => {
   const grid = useSelector((state: State) => state.nonogram.grid);
@@ -46,12 +46,7 @@ const Grid: React.FC = () => {
 
               {row.map((cell, x) => (
                 <td key={x}>
-                  <Cell
-                    cell={grid[y][x]}
-                    setCell={(v: number) => {
-                      dispatch(toggleColor(y, x));
-                    }}
-                  />
+                  <Cell x={x} y={y} />
                 </td>
               ))}
             </tr>

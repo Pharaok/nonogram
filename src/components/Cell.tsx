@@ -1,9 +1,13 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import "./Cell.scss";
+import { color, mark } from "./slices/grid";
+import { State } from "./store";
 
 type Props = {
-  cell: number;
-  setCell: (v: number) => void;
+  x: number;
+  y: number;
 };
 
 export enum CellState {
@@ -12,18 +16,23 @@ export enum CellState {
   Marked = 1 << 1,
 }
 
-const Cell: React.FC<Props> = (props) => {
-  const colored = props.cell & CellState.Colored;
-  const marked = props.cell & CellState.Marked;
+const Cell: React.FC<Props> = ({ y, x }) => {
+  const grid = useSelector((state: State) => state.nonogram.grid);
+  const cell = grid[y][x];
+  const colored = cell & CellState.Colored;
+  const marked = cell & CellState.Marked;
+
+  const dispatch = useDispatch();
+
   return (
     <div
       className={`cell ${colored ? "colored" : ""} ${marked ? "marked" : ""}`}
       onClick={(e) => {
-        props.setCell(colored ^ CellState.Colored);
+        dispatch(color(y, x));
       }}
       onContextMenu={(e) => {
         e.preventDefault();
-        props.setCell(marked ^ CellState.Marked);
+        dispatch(mark(y, x));
       }}
     ></div>
   );

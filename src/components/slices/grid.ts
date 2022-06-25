@@ -2,17 +2,19 @@ import produce, { applyPatches, Patch } from "immer";
 import { CellState } from "../Cell";
 import { base64ToBigInt } from "../../helpers";
 
-const TOGGLE_COLOR = "TOGGLE_COLOR";
+const COLOR = "TOGGLE_COLOR";
+const MARK = "TOGGLE_MARK";
 const CLEAR = "CLEAR";
 const GENERATE = "GENERATE";
 
-interface ToggleColoredAction {
-  type: typeof TOGGLE_COLOR;
+interface ColorAction {
+  type: typeof COLOR;
   payload: [number, number];
 }
 
-interface ClearAction {
-  type: typeof CLEAR;
+interface MarkAction {
+  type: typeof MARK;
+  payload: [number, number];
 }
 
 interface ResizeAction {
@@ -21,6 +23,10 @@ interface ResizeAction {
     seed: string;
     size: [number, number];
   };
+}
+
+interface ClearAction {
+  type: typeof CLEAR;
 }
 
 interface State {
@@ -33,24 +39,35 @@ const initialState: State = {
   solution: [[1]],
 };
 
-type Actions = ClearAction | ToggleColoredAction | ResizeAction;
+type Actions = ColorAction | MarkAction | ResizeAction | ClearAction;
 
-export const clear = () => ({ type: CLEAR });
-export const toggleColor = (y: number, x: number) => ({
-  type: TOGGLE_COLOR,
+export const color = (y: number, x: number) => ({
+  type: COLOR,
+  payload: [y, x],
+});
+export const mark = (y: number, x: number) => ({
+  type: MARK,
   payload: [y, x],
 });
 export const generate = (seed: string, height: number, width: number) => ({
   type: GENERATE,
   payload: { seed, size: [height, width] },
 });
+export const clear = () => ({ type: CLEAR });
 
 const grid = (prevState = initialState, action: Actions) => {
+  let [y, x] = [-1, -1];
   return produce(prevState, (draft) => {
     switch (action.type) {
-      case TOGGLE_COLOR:
-        const [y, x] = action.payload;
-        draft.grid[y][x] = draft.grid[y][x] ^ CellState.Colored;
+      case COLOR:
+        [y, x] = action.payload;
+        draft.grid[y][x] =
+          (draft.grid[y][x] ^ CellState.Colored) & CellState.Colored;
+        break;
+      case MARK:
+        [y, x] = action.payload;
+        draft.grid[y][x] =
+          (draft.grid[y][x] ^ CellState.Marked) & CellState.Marked;
         break;
       case CLEAR:
         draft.grid.forEach((row) => {
