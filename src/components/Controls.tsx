@@ -1,20 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
+
 import "./Controls.scss";
 import { bigIntToBase64, randomBigInt } from "../helpers";
 import { clear, generate } from "./slices/nonogram";
 
-interface Props {
-  seed: string;
-  width: number;
-  height: number;
-}
-
-const Controls: React.FC<Props> = (props) => {
-  const [width, setWidth] = useState(props.width);
-  const [height, setHeight] = useState(props.height);
-  const [seed, setSeed] = useState(props.seed);
+const Controls: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [width, setWidth] = useState(10);
+  const [height, setHeight] = useState(10);
+  const [seed, setSeed] = useState(
+    bigIntToBase64(randomBigInt(width * height))
+  );
   const didMount = useRef(false);
+
+  useEffect(() => {
+    dispatch(generate(seed, height, width));
+    setSearchParams({
+      seed,
+      width: width.toString(),
+      height: height.toString(),
+    });
+  }, []);
 
   useEffect(() => {
     if (didMount.current) {
@@ -32,6 +40,11 @@ const Controls: React.FC<Props> = (props) => {
         onSubmit={(e) => {
           e.preventDefault();
           dispatch(generate(seed, height, width));
+
+          searchParams.set("seed", seed);
+          searchParams.set("width", width.toString());
+          searchParams.set("height", height.toString());
+          setSearchParams(searchParams);
         }}
       >
         <div>
