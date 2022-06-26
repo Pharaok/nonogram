@@ -1,6 +1,3 @@
-import { combineReducers } from "redux";
-import grid from "./grid";
+import nonogram from "./nonogram";
 
-const rootReducer = combineReducers({ nonogram: grid });
-
-export default rootReducer;
+export default nonogram;

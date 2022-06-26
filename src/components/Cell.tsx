@@ -1,9 +1,7 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import { useNonogramDispatch, useNonogramSelector } from "./hooks";
 import "./Cell.scss";
-import { color, mark } from "./slices/grid";
-import { State } from "./store";
+import { color, mark } from "./slices/nonogram";
 
 type Props = {
   x: number;
@@ -17,12 +15,12 @@ export enum CellState {
 }
 
 const Cell: React.FC<Props> = ({ y, x }) => {
-  const grid = useSelector((state: State) => state.nonogram.grid);
+  const grid = useNonogramSelector((state) => state.grid);
   const cell = grid[y][x];
   const colored = cell & CellState.Colored;
   const marked = cell & CellState.Marked;
 
-  const dispatch = useDispatch();
+  const dispatch = useNonogramDispatch();
 
   return (
     <div

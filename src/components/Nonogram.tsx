@@ -1,15 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Provider } from "react-redux";
+import React, { useEffect, useMemo } from "react";
+import { useNonogramDispatch, useNonogramSelector } from "./hooks";
 import { isEqual } from "lodash";
-import store, { State } from "./store";
 
 import "./Nonogram.scss";
 import Controls from "./Controls";
 import Grid from "./Grid";
-import { bigIntToBase64, createClues, randomBigInt } from "../helpers";
-import { useDispatch } from "react-redux";
-import { generate } from "./slices/grid";
-import { useSelector } from "react-redux";
+import { createClues } from "../helpers";
+import { generate } from "./slices/nonogram";
 
 interface Props {
   seed: string;
@@ -18,10 +15,9 @@ interface Props {
 }
 
 const Nonogram: React.FC<Props> = ({ seed, width, height }) => {
-  const grid = useSelector((state: State) => state.nonogram.grid);
-  const solution = useSelector((state: State) => state.nonogram.solution);
-  const dispatch = useDispatch();
-  const [solved, setSolved] = useState(false);
+  const grid = useNonogramSelector((state) => state.grid);
+  const solution = useNonogramSelector((state) => state.solution);
+  const dispatch = useNonogramDispatch();
 
   const [rowClues, colClues] = useMemo(
     () => [
@@ -66,6 +62,3 @@ const Nonogram: React.FC<Props> = ({ seed, width, height }) => {
 };
 
 export default Nonogram;
-function dispatch(arg0: any) {
-  throw new Error("Function not implemented.");
-}

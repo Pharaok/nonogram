@@ -1,18 +1,15 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
+import { useNonogramDispatch, useNonogramSelector } from "./hooks";
 
 import "./Grid.scss";
 import Cell from "./Cell";
 import Clue from "./Clue";
-import { useDispatch } from "react-redux";
-import { State } from "./store";
-import { color } from "./slices/grid";
+import { NonogramState } from "./store";
 
 const Grid: React.FC = () => {
-  const grid = useSelector((state: State) => state.nonogram.grid);
-  const solution = useSelector((state: State) => state.nonogram.solution);
-  const dispatch = useDispatch();
-
+  const grid = useSelector((state: NonogramState) => state.grid);
+  const solution = useNonogramSelector((state) => state.solution);
   return (
     <table className="grid">
       <tbody>

@@ -1,6 +1,5 @@
 import React from "react";
 import { createClues } from "../helpers";
-import { CellState } from "./Cell";
 import "./Clue.scss";
 
 type Props = {

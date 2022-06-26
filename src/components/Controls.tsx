@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import "./Controls.scss";
 import { bigIntToBase64, randomBigInt } from "../helpers";
-import { clear, generate } from "./slices/grid";
-import { useSearchParams } from "react-router-dom";
+import { clear, generate } from "./slices/nonogram";
 
 interface Props {
   seed: string;

@@ -1,4 +1,4 @@
-import produce, { applyPatches, Patch } from "immer";
+import produce from "immer";
 import { CellState } from "../Cell";
 import { base64ToBigInt } from "../../helpers";
 
@@ -11,12 +11,10 @@ interface ColorAction {
   type: typeof COLOR;
   payload: [number, number];
 }
-
 interface MarkAction {
   type: typeof MARK;
   payload: [number, number];
 }
-
 interface ResizeAction {
   type: typeof GENERATE;
   payload: {
@@ -24,7 +22,6 @@ interface ResizeAction {
     size: [number, number];
   };
 }
-
 interface ClearAction {
   type: typeof CLEAR;
 }
@@ -33,7 +30,6 @@ interface State {
   grid: number[][];
   solution: number[][];
 }
-
 const initialState: State = {
   grid: [[0]],
   solution: [[1]],
@@ -55,7 +51,7 @@ export const generate = (seed: string, height: number, width: number) => ({
 });
 export const clear = () => ({ type: CLEAR });
 
-const grid = (prevState = initialState, action: Actions) => {
+const nonogram = (prevState = initialState, action: Actions) => {
   let [y, x] = [-1, -1];
   return produce(prevState, (draft) => {
     switch (action.type) {
@@ -92,10 +88,9 @@ const grid = (prevState = initialState, action: Actions) => {
             )
           )
         );
-      default:
         break;
     }
   });
 };
 
-export default grid;
+export default nonogram;
