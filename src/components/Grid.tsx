@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { useNonogramDispatch, useNonogramSelector } from "./hooks";
+import { useNonogramSelector } from "./hooks";
 
 import "./Grid.scss";
 import Cell from "./Cell";

@@ -8,20 +8,22 @@ import { clear, generate } from "./slices/nonogram";
 
 const Controls: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [width, setWidth] = useState(10);
-  const [height, setHeight] = useState(10);
+  const [width, setWidth] = useState(Number(searchParams.get("width")) || 10);
+  const [height, setHeight] = useState(
+    Number(searchParams.get("height")) || 10
+  );
   const [seed, setSeed] = useState(
-    bigIntToBase64(randomBigInt(width * height))
+    searchParams.get("seed") || bigIntToBase64(randomBigInt(width * height))
   );
   const didMount = useRef(false);
 
   useEffect(() => {
     dispatch(generate(seed, height, width));
-    setSearchParams({
-      seed,
-      width: width.toString(),
-      height: height.toString(),
-    });
+
+    searchParams.set("seed", seed);
+    searchParams.set("width", width.toString());
+    searchParams.set("height", height.toString());
+    setSearchParams(searchParams);
   }, []);
 
   useEffect(() => {

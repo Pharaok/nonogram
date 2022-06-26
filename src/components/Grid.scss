@@ -1,5 +1,6 @@
 .grid {
   border-collapse: collapse;
+  touch-action: manipulation;
   tr {
     td {
       padding: 0;
