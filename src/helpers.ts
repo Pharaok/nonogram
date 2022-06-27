@@ -1,4 +1,4 @@
-import { CellState } from "./components/Cell";
+import { Brushes } from "./components/Cell";
 
 export const randomBigInt = (size: number): bigint => {
   const seedArray = [];
@@ -37,7 +37,7 @@ export const createClues = (cells: number[]) => {
   const clues: number[] = [];
   let consecutive = 0;
   cells.forEach((cell) => {
-    if (cell & CellState.Colored) {
+    if (cell & Brushes.Colored) {
       consecutive += 1;
     } else if (consecutive > 0) {
       clues.push(consecutive);

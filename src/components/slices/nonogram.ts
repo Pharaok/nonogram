@@ -1,18 +1,17 @@
 import produce from "immer";
-import { CellState } from "../Cell";
 import { base64ToBigInt } from "../../helpers";
 
-const COLOR = "TOGGLE_COLOR";
-const MARK = "TOGGLE_MARK";
+const SET_BRUSH = "SET_BRUSH";
+const PAINT_CELL = "PAINT_CELL";
 const CLEAR = "CLEAR";
 const GENERATE = "GENERATE";
 
-interface ColorAction {
-  type: typeof COLOR;
-  payload: [number, number];
+interface SetBrushAction {
+  type: typeof SET_BRUSH;
+  payload: number;
 }
-interface MarkAction {
-  type: typeof MARK;
+interface PaintCellAction {
+  type: typeof PAINT_CELL;
   payload: [number, number];
 }
 interface ResizeAction {
@@ -29,20 +28,22 @@ interface ClearAction {
 interface State {
   grid: number[][];
   solution: number[][];
+  brush: number;
 }
 const initialState: State = {
   grid: [[0]],
   solution: [[1]],
+  brush: 0,
 };
 
-type Actions = ColorAction | MarkAction | ResizeAction | ClearAction;
+type Actions = SetBrushAction | PaintCellAction | ResizeAction | ClearAction;
 
-export const color = (y: number, x: number) => ({
-  type: COLOR,
-  payload: [y, x],
+export const setBrush = (b: number) => ({
+  type: SET_BRUSH,
+  payload: b,
 });
-export const mark = (y: number, x: number) => ({
-  type: MARK,
+export const paintCell = (y: number, x: number) => ({
+  type: PAINT_CELL,
   payload: [y, x],
 });
 export const generate = (seed: string, height: number, width: number) => ({
@@ -52,18 +53,14 @@ export const generate = (seed: string, height: number, width: number) => ({
 export const clear = () => ({ type: CLEAR });
 
 const nonogram = (prevState = initialState, action: Actions) => {
-  let [y, x] = [-1, -1];
   return produce(prevState, (draft) => {
     switch (action.type) {
-      case COLOR:
-        [y, x] = action.payload;
-        draft.grid[y][x] =
-          (draft.grid[y][x] ^ CellState.Colored) & CellState.Colored;
+      case SET_BRUSH:
+        draft.brush = action.payload;
         break;
-      case MARK:
-        [y, x] = action.payload;
-        draft.grid[y][x] =
-          (draft.grid[y][x] ^ CellState.Marked) & CellState.Marked;
+      case PAINT_CELL:
+        const [y, x] = action.payload;
+        draft.grid[y][x] = draft.brush;
         break;
       case CLEAR:
         draft.grid.forEach((row) => {
