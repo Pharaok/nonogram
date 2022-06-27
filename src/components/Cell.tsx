@@ -37,7 +37,7 @@ const Cell: React.FC<Props> = ({ y, x, readonly = false }) => {
           } else if (e.buttons & 2) {
             brush = (cell & Brushes.Marked) ^ Brushes.Marked;
           }
-          dispatch(paintCell(y, x, brush));
+          dispatch(paintCell(x, y, brush));
           dispatch(setBrush(brush));
         }
       }}
@@ -49,7 +49,7 @@ const Cell: React.FC<Props> = ({ y, x, readonly = false }) => {
       onMouseOver={(e) => {
         if (!readonly) {
           if (e.buttons) {
-            dispatch(paintCell(y, x, brush));
+            dispatch(paintCell(x, y, brush));
           }
         }
       }}

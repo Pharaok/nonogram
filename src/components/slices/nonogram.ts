@@ -23,7 +23,7 @@ interface ResizeAction {
 }
 interface ClearAction {
   type: typeof CLEAR;
-  payload: number;
+  payload: { brush: number };
 }
 
 interface State {
@@ -43,7 +43,7 @@ export const setBrush = (b: number) => ({
   type: SET_BRUSH,
   payload: b,
 });
-export const paintCell = (y: number, x: number, brush: number) => ({
+export const paintCell = (x: number, y: number, brush: number) => ({
   type: PAINT_CELL,
   payload: { path: [y, x], brush },
 });
@@ -51,7 +51,7 @@ export const generate = (seed: string, height: number, width: number) => ({
   type: GENERATE,
   payload: { seed, size: [height, width] },
 });
-export const clear = (b: number) => ({ type: CLEAR, payload: b });
+export const clear = (brush: number) => ({ type: CLEAR, payload: { brush } });
 
 const nonogram = (prevState = initialState, action: Actions) => {
   return produce(prevState, (draft) => {
@@ -64,11 +64,9 @@ const nonogram = (prevState = initialState, action: Actions) => {
         draft.grid[y][x] = action.payload.brush;
         break;
       case CLEAR:
-        draft.grid.forEach((row, y) => {
-          row.forEach((cell, x) => {
-            draft.grid[y][x] &= ~action.payload;
-          });
-        });
+        draft.grid = draft.grid.map((row) =>
+          row.map((cell) => cell & ~action.payload.brush)
+        );
         break;
       case GENERATE:
         const [height, width] = action.payload.size;

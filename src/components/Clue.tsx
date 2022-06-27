@@ -9,7 +9,6 @@ type Props = {
 };
 
 const Clue: React.FC<Props> = ({ cells, solution, orientation }) => {
-  // Generate clues from solution
   const clues = createClues(solution);
   const currClues = createClues(cells);
 
