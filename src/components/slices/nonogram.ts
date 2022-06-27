@@ -12,7 +12,7 @@ interface SetBrushAction {
 }
 interface PaintCellAction {
   type: typeof PAINT_CELL;
-  payload: [number, number];
+  payload: { path: [number, number]; brush: number };
 }
 interface ResizeAction {
   type: typeof GENERATE;
@@ -23,6 +23,7 @@ interface ResizeAction {
 }
 interface ClearAction {
   type: typeof CLEAR;
+  payload: number;
 }
 
 interface State {
@@ -42,15 +43,15 @@ export const setBrush = (b: number) => ({
   type: SET_BRUSH,
   payload: b,
 });
-export const paintCell = (y: number, x: number) => ({
+export const paintCell = (y: number, x: number, brush: number) => ({
   type: PAINT_CELL,
-  payload: [y, x],
+  payload: { path: [y, x], brush },
 });
 export const generate = (seed: string, height: number, width: number) => ({
   type: GENERATE,
   payload: { seed, size: [height, width] },
 });
-export const clear = () => ({ type: CLEAR });
+export const clear = (b: number) => ({ type: CLEAR, payload: b });
 
 const nonogram = (prevState = initialState, action: Actions) => {
   return produce(prevState, (draft) => {
@@ -59,12 +60,14 @@ const nonogram = (prevState = initialState, action: Actions) => {
         draft.brush = action.payload;
         break;
       case PAINT_CELL:
-        const [y, x] = action.payload;
-        draft.grid[y][x] = draft.brush;
+        const [y, x] = action.payload.path;
+        draft.grid[y][x] = action.payload.brush;
         break;
       case CLEAR:
-        draft.grid.forEach((row) => {
-          row.fill(0);
+        draft.grid.forEach((row, y) => {
+          row.forEach((cell, x) => {
+            draft.grid[y][x] &= ~action.payload;
+          });
         });
         break;
       case GENERATE:

@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import "./Controls.scss";
 import { bigIntToBase64, randomBigInt } from "../helpers";
 import { clear, generate } from "./slices/nonogram";
+import { Brushes } from "./Cell";
 
 const Controls: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -49,7 +50,7 @@ const Controls: React.FC = () => {
           setSearchParams(searchParams);
         }}
       >
-        <div>
+        <div className="seed-input">
           <input
             type="text"
             name="seed"
@@ -64,7 +65,7 @@ const Controls: React.FC = () => {
               setSeed(bigIntToBase64(randomBigInt(width * height)));
             }}
           >
-            R
+            <span className="material-symbols-rounded">shuffle</span>
           </button>
         </div>
         <input
@@ -89,10 +90,10 @@ const Controls: React.FC = () => {
       </form>
       <button
         onClick={() => {
-          dispatch(clear());
+          dispatch(clear(Brushes.All));
         }}
       >
-        Clear
+        <span className="material-symbols-rounded">replay</span>
       </button>
     </div>
   );

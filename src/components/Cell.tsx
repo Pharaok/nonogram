@@ -6,16 +6,19 @@ import { setBrush, paintCell } from "./slices/nonogram";
 type Props = {
   x: number;
   y: number;
+  readonly?: boolean;
 };
 
 export enum Brushes {
   Empty,
   Colored = 1 << 0,
   Marked = 1 << 1,
+  All = (1 << 3) - 1,
 }
 
-const Cell: React.FC<Props> = ({ y, x }) => {
+const Cell: React.FC<Props> = ({ y, x, readonly = false }) => {
   const grid = useNonogramSelector((state) => state.grid);
+  const brush = useNonogramSelector((state) => state.brush);
   const cell = grid[y][x];
   const colored = cell & Brushes.Colored;
   const marked = cell & Brushes.Marked;
@@ -26,20 +29,28 @@ const Cell: React.FC<Props> = ({ y, x }) => {
     <div
       className={`cell ${colored ? "colored" : ""} ${marked ? "marked" : ""}`}
       onMouseDown={(e) => {
-        e.preventDefault();
-        if (e.buttons & 1) {
-          dispatch(setBrush((cell & Brushes.Colored) ^ Brushes.Colored));
-        } else if (e.buttons & 2) {
-          dispatch(setBrush((cell & Brushes.Marked) ^ Brushes.Marked));
+        if (!readonly) {
+          e.preventDefault();
+          let brush = 0;
+          if (e.buttons & 1) {
+            brush = (cell & Brushes.Colored) ^ Brushes.Colored;
+          } else if (e.buttons & 2) {
+            brush = (cell & Brushes.Marked) ^ Brushes.Marked;
+          }
+          dispatch(paintCell(y, x, brush));
+          dispatch(setBrush(brush));
         }
-        dispatch(paintCell(y, x));
       }}
       onContextMenu={(e) => {
-        e.preventDefault();
+        if (!readonly) {
+          e.preventDefault();
+        }
       }}
       onMouseOver={(e) => {
-        if (e.buttons) {
-          dispatch(paintCell(y, x));
+        if (!readonly) {
+          if (e.buttons) {
+            dispatch(paintCell(y, x, brush));
+          }
         }
       }}
     ></div>

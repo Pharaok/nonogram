@@ -1,15 +1,20 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { isEqual } from "lodash";
-import { useNonogramSelector } from "./hooks";
+import { useNonogramDispatch, useNonogramSelector } from "./hooks";
 
 import "./Nonogram.scss";
 import Controls from "./Controls";
 import Grid from "./Grid";
 import { createClues } from "../helpers";
+import { Brushes } from "./Cell";
+import { clear } from "./slices/nonogram";
 
 const Nonogram: React.FC = () => {
   const grid = useNonogramSelector((state) => state.grid);
   const solution = useNonogramSelector((state) => state.solution);
+  const [solved, setSolved] = useState(false);
+
+  const dispatch = useNonogramDispatch();
 
   const [rowClues, colClues] = useMemo(
     () => [
@@ -19,8 +24,8 @@ const Nonogram: React.FC = () => {
     [solution]
   );
 
-  const isSolved = () => {
-    return (
+  useEffect(() => {
+    if (
       isEqual(
         grid.map((row) => createClues(row)),
         rowClues
@@ -29,18 +34,20 @@ const Nonogram: React.FC = () => {
         grid[0].map((c, j) => createClues(grid.map((row) => row[j]))),
         colClues
       )
-    );
-  };
-
-  useEffect(() => {
-    if (isSolved()) {
-      alert("You won!");
+    ) {
+      setSolved(true);
     }
   }, [grid]);
+  useEffect(() => {
+    if (solved) {
+      dispatch(clear(Brushes.Marked));
+      alert("You won!");
+    }
+  }, [solved]);
 
   return (
     <div className="nonogram">
-      <Grid />
+      <Grid readonly={solved} />
       <Controls />
     </div>
   );

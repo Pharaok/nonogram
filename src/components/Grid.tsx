@@ -7,7 +7,11 @@ import Cell from "./Cell";
 import Clue from "./Clue";
 import { NonogramState } from "./store";
 
-const Grid: React.FC = () => {
+interface Props {
+  readonly?: boolean;
+}
+
+const Grid: React.FC<Props> = ({ readonly = false }) => {
   const grid = useSelector((state: NonogramState) => state.grid);
   const solution = useNonogramSelector((state) => state.solution);
   return (
@@ -43,7 +47,7 @@ const Grid: React.FC = () => {
 
               {row.map((cell, x) => (
                 <td key={x}>
-                  <Cell x={x} y={y} />
+                  <Cell x={x} y={y} readonly={readonly} />
                 </td>
               ))}
             </tr>
