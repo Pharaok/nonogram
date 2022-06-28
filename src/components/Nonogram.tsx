@@ -25,6 +25,10 @@ const Nonogram: React.FC = () => {
   );
 
   useEffect(() => {
+    setSolved(false);
+  }, [solution]);
+
+  useEffect(() => {
     if (
       isEqual(
         grid.map((row) => createClues(row)),
@@ -38,6 +42,7 @@ const Nonogram: React.FC = () => {
       setSolved(true);
     }
   }, [grid]);
+
   useEffect(() => {
     if (solved) {
       dispatch(clear(Brushes.Marked));
