@@ -1,14 +1,14 @@
 import React from "react";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Root from "./components/routes/Root";
 
 const App: React.FC = () => {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Root />} />
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 };
 
