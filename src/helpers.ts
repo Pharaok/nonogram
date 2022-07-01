@@ -20,13 +20,13 @@ const DIGITS =
 export const bigIntToBase64 = (n: bigint) => {
   let b64 = "";
   for (let i = 0; i < Math.ceil(n.toString(2).length / 6); i++) {
-    b64 = DIGITS[Number((n >> BigInt(i * 6)) & 0x3fn)] + b64;
+    b64 = DIGITS[Number((n >> BigInt(i * 6)) & BigInt(0x3f))] + b64;
   }
   return b64;
 };
 
 export const base64ToBigInt = (s: string) => {
-  let n = 0n;
+  let n = BigInt(0);
   for (let i = 0; i < s.length; i++) {
     n += BigInt(Math.pow(64, i) * DIGITS.indexOf(s[s.length - i - 1]));
   }

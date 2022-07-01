@@ -1,6 +1,8 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 module.exports = {
   entry: "./src/index.tsx",
@@ -23,7 +25,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js", ".jsx"],
+    extensions: [".tsx", ".ts", ".jsz", ".js"],
   },
   output: {
     filename: "bundle.js",
@@ -43,5 +45,6 @@ module.exports = {
     new CopyPlugin({
       patterns: ["CNAME"],
     }),
+    new BundleAnalyzerPlugin(),
   ],
 };

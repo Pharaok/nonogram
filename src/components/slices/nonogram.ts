@@ -81,7 +81,7 @@ const nonogram = (prevState = initialState, action: Actions) => {
             Number(
               Boolean(
                 base64ToBigInt(action.payload.seed) &
-                  (1n << BigInt(y * width + x))
+                  (BigInt(1) << BigInt(y * width + x))
               )
             )
           )
