@@ -13,48 +13,37 @@ interface Props {
 
 const Grid: React.FC<Props> = ({ readonly = false }) => {
   const grid = useSelector((state: NonogramState) => state.grid);
+  const width = grid[0].length;
+  const height = grid.length;
+  const l = 60 / Math.max(width, height);
   const solution = useNonogramSelector((state) => state.solution);
+
   return (
-    <table className="grid">
-      <tbody>
-        <tr>
-          <td></td>
-
-          {grid[0].map((cell, j) => {
-            return (
-              // TODO: find alternative to verticalAlign
-              <td key={j} style={{ verticalAlign: "bottom" }}>
-                <Clue
-                  cells={grid.map((row) => row[j])}
-                  solution={solution.map((row) => row[j])}
-                  orientation="vertical"
-                />
-              </td>
-            );
-          })}
-        </tr>
-
-        {grid.map((row, y) => {
-          return (
-            <tr key={y}>
-              <td>
-                <Clue
-                  cells={row}
-                  solution={solution[y]}
-                  orientation="horizontal"
-                />
-              </td>
-
-              {row.map((cell, x) => (
-                <td key={x}>
-                  <Cell x={x} y={y} readonly={readonly} />
-                </td>
-              ))}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <div
+      className="grid"
+      style={{
+        gridTemplateColumns: `auto repeat(${width}, ${l}vmin)`,
+        gridTemplateRows: `auto repeat(${height}, ${l}vmin)`,
+      }}
+    >
+      <div></div>
+      {grid[0].map((cell, x) => (
+        <Clue
+          cells={grid.map((row) => row[x])}
+          solution={solution.map((row) => row[x])}
+          orientation="vertical"
+          key={`cc${x}`}
+        />
+      ))}
+      {grid.map((row, y) => (
+        <React.Fragment key={y}>
+          <Clue cells={row} solution={solution[y]} orientation="horizontal" />
+          {row.map((cell, x) => (
+            <Cell x={x} y={y} readonly={readonly} />
+          ))}
+        </React.Fragment>
+      ))}
+    </div>
   );
 };
 

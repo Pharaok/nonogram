@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNonogramDispatch, useNonogramSelector } from "./hooks";
 import "./Cell.scss";
 import { setBrush, paintCell } from "./slices/nonogram";
