@@ -37,7 +37,6 @@ const Controls: React.FC = () => {
 
   const dispatch = useDispatch();
   return (
-    // TODO: Add button icons
     <div className="controls">
       <form
         onSubmit={(e) => {
@@ -52,8 +51,7 @@ const Controls: React.FC = () => {
       >
         <div className="seed-input">
           <input
-            type="text"
-            name="seed"
+            placeholder="seed"
             value={seed}
             onChange={(e) => {
               setSeed(e.target.value);
@@ -68,25 +66,28 @@ const Controls: React.FC = () => {
             <span className="material-symbols-rounded">shuffle</span>
           </button>
         </div>
-        <input
-          type="number"
-          name="width"
-          value={width}
-          onChange={(e) => {
-            setWidth(Number(e.target.value));
-          }}
-          min={1}
-        />
-        <input
-          type="number"
-          name="height"
-          value={height}
-          onChange={(e) => {
-            setHeight(Number(e.target.value));
-          }}
-          min={1}
-        />
-        <button type="submit">G</button>
+        <div className="size-input">
+          <input
+            type="number"
+            placeholder="width"
+            value={width}
+            onChange={(e) => {
+              setWidth(Math.max(1, Number(e.target.value)));
+            }}
+            min={1}
+          />
+          <span>X</span>
+          <input
+            type="number"
+            placeholder="height"
+            value={height}
+            onChange={(e) => {
+              setHeight(Math.max(1, Number(e.target.value)));
+            }}
+            min={1}
+          />
+        </div>
+        <button type="submit">GO</button>
       </form>
       <button
         onClick={() => {

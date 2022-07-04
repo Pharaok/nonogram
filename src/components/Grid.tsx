@@ -39,7 +39,7 @@ const Grid: React.FC<Props> = ({ readonly = false }) => {
         <React.Fragment key={y}>
           <Clue cells={row} solution={solution[y]} orientation="horizontal" />
           {row.map((cell, x) => (
-            <Cell x={x} y={y} readonly={readonly} />
+            <Cell x={x} y={y} readonly={readonly} key={x} />
           ))}
         </React.Fragment>
       ))}

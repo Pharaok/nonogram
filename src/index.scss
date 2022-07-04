@@ -1,8 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
-
+@import "./variables";
 body {
-  font-family: "Roboto Mono", monospace;
+  font-family: "Roboto", sans-serif;
+  background-color: $background;
 }
 
 #root {
@@ -14,11 +16,5 @@ body {
 }
 
 button {
-  border: none;
   outline: none;
-}
-
-input {
-  padding: 0 10px;
-  border: none;
 }
