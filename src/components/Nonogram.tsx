@@ -1,58 +1,30 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { isEqual } from "lodash";
-import { useNonogramDispatch, useNonogramSelector } from "./hooks";
+import React, { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import "./Nonogram.scss";
 import Controls from "./Controls";
 import Grid from "./Grid";
-import { createClues } from "../helpers";
-import { Brushes } from "./Cell";
-import { clear } from "./slices/nonogram";
+import { bigIntToBase64, randomBigInt } from "../helpers";
+import { useNonogramDispatch } from "./hooks";
+import { generate } from "./slices/nonogram";
 
 const Nonogram: React.FC = () => {
-  const grid = useNonogramSelector((state) => state.grid);
-  const solution = useNonogramSelector((state) => state.solution);
-  const [solved, setSolved] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const width = Number(searchParams.get("width")) || 8;
+  const height = Number(searchParams.get("height")) || 8;
+  const seed =
+    searchParams.get("seed") || bigIntToBase64(randomBigInt(width * height));
 
   const dispatch = useNonogramDispatch();
 
-  const [rowClues, colClues] = useMemo(
-    () => [
-      solution.map((row) => createClues(row)),
-      solution[0].map((c, j) => createClues(solution.map((row) => row[j]))),
-    ],
-    [solution]
-  );
-
   useEffect(() => {
-    setSolved(false);
-  }, [solution]);
-
-  useEffect(() => {
-    if (
-      isEqual(
-        grid.map((row) => createClues(row)),
-        rowClues
-      ) &&
-      isEqual(
-        grid[0].map((c, j) => createClues(grid.map((row) => row[j]))),
-        colClues
-      )
-    ) {
-      setSolved(true);
-    }
-  }, [grid]);
-
-  useEffect(() => {
-    if (solved) {
-      dispatch(clear(Brushes.Marked));
-      alert("You won!");
-    }
-  }, [solved]);
+    dispatch(generate(seed, height, width));
+  }, [width, height, seed]);
 
   return (
     <div className="nonogram">
-      <Grid readonly={solved} />
+      <Grid />
       <Controls />
     </div>
   );

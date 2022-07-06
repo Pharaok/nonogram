@@ -27,6 +27,10 @@ const Cell: React.FC<Props> = ({ y, x, readonly = false }) => {
 
   return (
     <div
+      style={{
+        gridArea: `${y + 2} / ${x + 2}`,
+        transitionDelay: `${(x + y) * 50}ms`,
+      }}
       className={`cell ${colored ? "colored" : ""} ${marked ? "marked" : ""}`}
       onMouseDown={(e) => {
         if (!readonly) {
