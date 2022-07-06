@@ -59,16 +59,17 @@ const nonogram = (prevState = initialState, action: Actions) => {
       case SET_BRUSH:
         draft.brush = action.payload;
         break;
-      case PAINT_CELL:
+      case PAINT_CELL: {
         const [y, x] = action.payload.path;
         draft.grid[y][x] = action.payload.brush;
         break;
+      }
       case CLEAR:
         draft.grid = draft.grid.map((row) =>
           row.map((cell) => cell & ~action.payload.brush)
         );
         break;
-      case GENERATE:
+      case GENERATE: {
         const [height, width] = action.payload.size;
         const newGrid = [];
         for (let i = 0; i < height; i++) {
@@ -87,6 +88,7 @@ const nonogram = (prevState = initialState, action: Actions) => {
           )
         );
         break;
+      }
     }
   });
 };

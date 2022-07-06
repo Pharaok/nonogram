@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { Link, useSearchParams, createSearchParams } from "react-router-dom";
+import { Link, createSearchParams, useSearchParams } from "react-router-dom";
 import { bigIntToBase64, randomBigInt } from "../helpers";
-
 import "./NonogramForm.scss";
 
 const NonogramForm = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [width, setWidth] = useState(Number(searchParams.get("width")) || 10);
   const [height, setHeight] = useState(
     Number(searchParams.get("height")) || 10

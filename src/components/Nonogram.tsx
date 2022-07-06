@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-
 import "./Nonogram.scss";
 import Controls from "./Controls";
 import Grid from "./Grid";
@@ -9,7 +8,7 @@ import { useNonogramDispatch } from "./hooks";
 import { generate } from "./slices/nonogram";
 
 const Nonogram: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const width = Number(searchParams.get("width")) || 8;
   const height = Number(searchParams.get("height")) || 8;

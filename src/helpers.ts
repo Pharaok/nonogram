@@ -4,7 +4,7 @@ export const randomBigInt = (size: number): bigint => {
   const seedArray = [];
   let i = size;
   while (i > 0) {
-    let b = Math.min(i, 15);
+    const b = Math.min(i, 15);
     seedArray.push(
       Math.floor(Math.random() * Math.pow(2, b))
         .toString(2)
