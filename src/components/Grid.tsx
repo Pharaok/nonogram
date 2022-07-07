@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNonogramDispatch, useNonogramSelector } from "./hooks";
+import { useNonogramSelector } from "./hooks";
 
 import "./Grid.scss";
-import Cell, { Brushes } from "./Cell";
+import Cell from "./Cell";
 import Clue from "./Clue";
 import { isEqual } from "lodash-es";
 import { createClues } from "../helpers";
-import { clear } from "./slices/nonogram";
 
 const Grid: React.FC = () => {
   const grid = useNonogramSelector((state) => state.grid);
@@ -15,8 +14,6 @@ const Grid: React.FC = () => {
   const l = 60 / Math.max(width, height);
   const solution = useNonogramSelector((state) => state.solution);
   const [solved, setSolved] = useState(false);
-
-  const dispatch = useNonogramDispatch();
 
   const clues = useMemo(
     () => [
@@ -37,10 +34,6 @@ const Grid: React.FC = () => {
       )
     );
   }, [grid]);
-
-  useEffect(() => {
-    dispatch(clear(Brushes.Marked));
-  }, [solved]);
 
   return (
     <div
@@ -71,7 +64,6 @@ const Grid: React.FC = () => {
         className="background"
         style={{ gridArea: `2 / 2 / ${2 + height} / ${2 + width}` }}
         viewBox={`0 0 ${width} ${height}`}
-        shapeRendering="crispEdges"
       >
         {solution.map((row, y) =>
           row.map((cell, x) =>
