@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNonogramSelector } from "./hooks";
 
 import "./Grid.scss";
@@ -8,6 +8,7 @@ import { isEqual } from "lodash-es";
 import { createClues } from "../helpers";
 
 const Grid: React.FC = () => {
+  const gridEl: React.Ref<HTMLDivElement> = useRef(null);
   const grid = useNonogramSelector((state) => state.grid);
   const width = grid[0].length;
   const height = grid.length;
@@ -37,6 +38,7 @@ const Grid: React.FC = () => {
 
   return (
     <div
+      ref={gridEl}
       className={`grid ${solved ? "solved" : ""}`}
       style={{
         gridTemplateColumns: `auto repeat(${width}, ${l}vmin)`,
@@ -64,6 +66,7 @@ const Grid: React.FC = () => {
         className="background"
         style={{ gridArea: `2 / 2 / ${2 + height} / ${2 + width}` }}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="none"
       >
         {solution.map((row, y) =>
           row.map((cell, x) =>

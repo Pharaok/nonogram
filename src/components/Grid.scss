@@ -3,6 +3,7 @@
 .grid {
   font-family: "Roboto Mono", monospace;
   display: grid;
+  user-select: none;
   > * {
     box-sizing: border-box;
     border-bottom: 1px solid black;
