@@ -3,9 +3,10 @@ import { useSearchParams } from "react-router-dom";
 import "./Nonogram.scss";
 import Controls from "./Controls";
 import Grid from "./Grid";
-import { bigIntToBase64, randomBigInt } from "../helpers";
+import { base64ToBigInt, bigIntToBase64, randomBigInt } from "../helpers";
 import { useNonogramDispatch } from "./hooks";
-import { generate } from "./slices/nonogram";
+import { clear, setSolution } from "./slices/nonogram";
+import { Brushes } from "./Cell";
 
 const Nonogram: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -18,7 +19,17 @@ const Nonogram: React.FC = () => {
   const dispatch = useNonogramDispatch();
 
   useEffect(() => {
-    dispatch(generate(seed, height, width));
+    const solution: number[][] = [];
+    for (let y = 0; y < height; y++) {
+      solution.push([]);
+      for (let x = 0; x < width; x++) {
+        solution[y][x] = +Boolean(
+          base64ToBigInt(seed) & (BigInt(1) << BigInt(y * width + x))
+        );
+      }
+    }
+    dispatch(setSolution(solution));
+    dispatch(clear(Brushes.All));
   }, [width, height, seed]);
 
   return (

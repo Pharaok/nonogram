@@ -1,10 +1,10 @@
 import produce from "immer";
-import { base64ToBigInt } from "../../helpers";
 
 const SET_BRUSH = "SET_BRUSH";
 const PAINT_CELL = "PAINT_CELL";
 const CLEAR = "CLEAR";
-const GENERATE = "GENERATE";
+const SET_SOLUTION = "SET_SOLUTION";
+const SET_GRID = "SET_GRID";
 
 interface SetBrushAction {
   type: typeof SET_BRUSH;
@@ -14,11 +14,16 @@ interface PaintCellAction {
   type: typeof PAINT_CELL;
   payload: { path: [number, number]; brush: number };
 }
-interface ResizeAction {
-  type: typeof GENERATE;
+interface setSolutionAction {
+  type: typeof SET_SOLUTION;
   payload: {
-    seed: string;
-    size: [number, number];
+    solution: number[][];
+  };
+}
+interface setGridAction {
+  type: typeof SET_GRID;
+  payload: {
+    grid: number[][];
   };
 }
 interface ClearAction {
@@ -37,7 +42,12 @@ const initialState: State = {
   brush: 0,
 };
 
-type Actions = SetBrushAction | PaintCellAction | ResizeAction | ClearAction;
+type Actions =
+  | SetBrushAction
+  | PaintCellAction
+  | setSolutionAction
+  | setGridAction
+  | ClearAction;
 
 export const setBrush = (b: number) => ({
   type: SET_BRUSH,
@@ -47,9 +57,13 @@ export const paintCell = (x: number, y: number, brush: number) => ({
   type: PAINT_CELL,
   payload: { path: [y, x], brush },
 });
-export const generate = (seed: string, height: number, width: number) => ({
-  type: GENERATE,
-  payload: { seed, size: [height, width] },
+export const setSolution = (solution: number[][]) => ({
+  type: SET_SOLUTION,
+  payload: { solution },
+});
+export const setGrid = (grid: number[][]) => ({
+  type: SET_GRID,
+  payload: { grid },
 });
 export const clear = (brush: number) => ({ type: CLEAR, payload: { brush } });
 
@@ -69,25 +83,33 @@ const nonogram = (prevState = initialState, action: Actions) => {
           row.map((cell) => cell & ~action.payload.brush)
         );
         break;
-      case GENERATE: {
-        const [height, width] = action.payload.size;
-        const newGrid = [];
-        for (let i = 0; i < height; i++) {
-          newGrid.push(Array.from(Array(width), () => 0));
+      case SET_SOLUTION: {
+        const height = action.payload.solution.length;
+        const width = action.payload.solution[0].length;
+        if (height !== draft.grid.length || width !== draft.grid[0].length) {
+          const newGrid = [];
+          for (let i = 0; i < height; i++) {
+            newGrid.push(Array.from(Array(width), () => 0));
+          }
+          draft.grid = newGrid;
         }
-        draft.grid = newGrid;
 
-        draft.solution = newGrid.map((row, y) =>
-          row.map((cell, x) =>
-            Number(
-              Boolean(
-                base64ToBigInt(action.payload.seed) &
-                  (BigInt(1) << BigInt(y * width + x))
-              )
-            )
-          )
-        );
+        draft.solution = action.payload.solution;
         break;
+      }
+      case SET_GRID: {
+        draft.grid = action.payload.grid;
+        const height = action.payload.grid.length;
+        const width = action.payload.grid[0].length;
+        if (
+          height !== draft.solution.length ||
+          width !== draft.solution[0].length
+        ) {
+          const newSolution = [];
+          for (let i = 0; i < height; i++) {
+            newSolution.push(Array.from(Array(width), () => 0));
+          }
+        }
       }
     }
   });
