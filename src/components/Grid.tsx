@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { isEqual } from "lodash-es";
 import { useNonogramSelector } from "./hooks";
 
 import "./Grid.scss";
 import Cell from "./Cell";
 import Clue from "./Clue";
-import { isEqual } from "lodash-es";
 import { createClues } from "../helpers";
 
 const Grid: React.FC = () => {
