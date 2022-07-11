@@ -1,24 +1,32 @@
 import React, { useState } from "react";
-import { Link, createSearchParams, useSearchParams } from "react-router-dom";
+import {
+  createSearchParams,
+  useSearchParams,
+  useNavigate,
+} from "react-router-dom";
 import { bigIntToBase64, randomBigInt } from "../helpers";
 import "./NonogramForm.scss";
 
 const NonogramForm = () => {
   const [searchParams] = useSearchParams();
-  const [width, setWidth] = useState(Number(searchParams.get("width")) || 10);
-  const [height, setHeight] = useState(
-    Number(searchParams.get("height")) || 10
-  );
-  const [seed, setSeed] = useState(
-    searchParams.get("seed") || bigIntToBase64(randomBigInt(width * height))
-  );
-  const sp = createSearchParams({
-    seed,
-    width: width.toString(),
-    height: height.toString(),
-  }).toString();
+  const navigate = useNavigate();
+  const [width, setWidth] = useState(searchParams.get("width") ?? "8");
+  const [height, setHeight] = useState(searchParams.get("height") ?? "8");
+  const [seed, setSeed] = useState(searchParams.get("seed") ?? "");
   return (
-    <form id="nonogram-form">
+    <form
+      id="nonogram-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+
+        const sp = createSearchParams({
+          seed,
+          width,
+          height,
+        }).toString();
+        navigate(`/?${sp}`);
+      }}
+    >
       <div className="seed-input">
         <input
           placeholder="seed"
@@ -30,7 +38,7 @@ const NonogramForm = () => {
         <button
           onClick={(e) => {
             e.preventDefault();
-            setSeed(bigIntToBase64(randomBigInt(width * height)));
+            setSeed(bigIntToBase64(randomBigInt(+width * +height)));
           }}
         >
           <span className="material-symbols-rounded">shuffle</span>
@@ -40,26 +48,22 @@ const NonogramForm = () => {
         <input
           type="number"
           placeholder="width"
-          value={width}
-          onChange={(e) => {
-            setWidth(Math.max(1, Number(e.target.value)));
-          }}
+          required
           min={1}
+          value={width}
+          onChange={(e) => setWidth(e.target.value)}
         />
         <span>X</span>
         <input
           type="number"
           placeholder="height"
-          value={height}
-          onChange={(e) => {
-            setHeight(Math.max(1, Number(e.target.value)));
-          }}
+          required
           min={1}
+          value={height}
+          onChange={(e) => setHeight(e.target.value)}
         />
       </div>
-      <Link to={`/?${sp}`} className="go">
-        GO
-      </Link>
+      <button className="submit-button">GO</button>
     </form>
   );
 };
