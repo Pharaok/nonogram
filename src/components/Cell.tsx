@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { useNonogramDispatch, useNonogramSelector } from "./hooks";
 import "./Cell.scss";
 import { paintCell, setBrush } from "./slices/nonogram";
@@ -17,52 +17,14 @@ export enum Brushes {
 }
 
 const Cell: React.FC<Props> = ({ y, x, readonly = false }) => {
-  const cellEl: React.Ref<HTMLDivElement> = useRef(null);
   const cell = useNonogramSelector((state) => state.grid[y][x]);
-  const brush = useNonogramSelector((state) => state.brush);
   const colored = cell & Brushes.Colored;
   const marked = cell & Brushes.Marked;
 
   const dispatch = useNonogramDispatch();
 
-  // React 17+ registers touch events as passive
-  useEffect(() => {
-    cellEl.current?.addEventListener(
-      "touchend",
-      (e) => {
-        e.preventDefault(); // Prevent desktop events from firing.
-      },
-      { passive: false }
-    );
-  });
-  useEffect(() => {
-    const moveHandler = (e: TouchEvent) => {
-      // WARNING: HACK AHEAD
-      if (e.touches.length === 1) {
-        e.preventDefault();
-        const t = e.touches[0];
-        const actualTarget = document.elementFromPoint(t.clientX, t.clientY);
-        const m = actualTarget
-          ?.getAttribute("style")
-          ?.match(/grid-area:\s*(\d+)\s*\/\s*(\d+)\s*;/);
-        if (m) {
-          const [y, x] = m.slice(1).map((x) => Number(x) - 2);
-          dispatch(paintCell(x, y, brush));
-        }
-      }
-    };
-
-    cellEl.current?.addEventListener("touchmove", moveHandler, {
-      passive: false,
-    });
-    return () => {
-      cellEl.current?.removeEventListener("touchmove", moveHandler);
-    };
-  }, [brush]);
-
   return (
     <div
-      ref={cellEl}
       style={{
         gridArea: `${y + 2} / ${x + 2}`,
         transitionDelay: `${(x + y) * 50}ms`,
@@ -88,11 +50,6 @@ const Cell: React.FC<Props> = ({ y, x, readonly = false }) => {
       }}
       onContextMenu={(e) => {
         e.preventDefault();
-      }}
-      onMouseOver={(e) => {
-        if (e.buttons) {
-          dispatch(paintCell(x, y, brush));
-        }
       }}
     ></div>
   );

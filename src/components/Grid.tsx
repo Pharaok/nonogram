@@ -1,20 +1,26 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { isEqual } from "lodash-es";
-import { useNonogramSelector } from "./hooks";
+import { isEqual, zip } from "lodash-es";
+import { useNonogramDispatch, useNonogramSelector } from "./hooks";
 
 import "./Grid.scss";
 import Cell from "./Cell";
 import Clue from "./Clue";
 import { createClues } from "../helpers";
+import { paintCell } from "./slices/nonogram";
 
 const Grid: React.FC = () => {
   const gridEl: React.Ref<HTMLDivElement> = useRef(null);
   const grid = useNonogramSelector((state) => state.grid);
+  const solution = useNonogramSelector((state) => state.solution);
+  const brush = useNonogramSelector((state) => state.brush);
+  const [solved, setSolved] = useState(false);
+  const dispatch = useNonogramDispatch();
+  const firstPos = useRef<[number, number] | null>(null);
+  const direction = useRef<number | null>(null);
+
   const width = grid[0].length;
   const height = grid.length;
   const l = 60 / Math.max(width, height);
-  const solution = useNonogramSelector((state) => state.solution);
-  const [solved, setSolved] = useState(false);
 
   const clues = useMemo(
     () => [
@@ -36,6 +42,63 @@ const Grid: React.FC = () => {
     );
   }, [grid]);
 
+  useEffect(() => {
+    gridEl.current?.addEventListener(
+      "touchend",
+      (e) => {
+        if ((e.target as HTMLElement).classList.contains("cell")) {
+          e.preventDefault();
+          firstPos.current = null;
+          direction.current = null;
+        }
+      },
+      { passive: false }
+    );
+  });
+
+  const moveHandler = (clientX: number, clientY: number) => {
+    const target = document.elementFromPoint(clientX, clientY);
+    const m = target
+      ?.getAttribute("style")
+      ?.match(/grid-area:\s*(\d+)\s*\/\s*(\d+)\s*;/);
+    if (m) {
+      const pos = m
+        .slice(1)
+        .map((x) => Number(x) - 2)
+        .reverse() as [number, number];
+      if (firstPos.current === null) {
+        firstPos.current = pos;
+      } else if (
+        !isEqual(pos, firstPos.current) &&
+        zip(pos, firstPos.current).some((v) => v[0] === v[1]) &&
+        direction.current === null
+      ) {
+        const dx = Math.abs(firstPos.current[0] - pos[0]);
+        const dy = Math.abs(firstPos.current[1] - pos[1]);
+        direction.current = +(dx > dy);
+      } else if (direction.current !== null) {
+        pos[direction.current] = firstPos.current[direction.current];
+        dispatch(paintCell(pos[0], pos[1], brush));
+      }
+    }
+  };
+
+  useEffect(() => {
+    const touchMoveHandler = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        e.preventDefault();
+        moveHandler(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+
+    gridEl.current?.addEventListener("touchmove", touchMoveHandler, {
+      passive: false,
+    });
+    return () => {
+      gridEl.current?.removeEventListener("touchmove", touchMoveHandler);
+    };
+  }, [brush]);
+
   return (
     <div
       ref={gridEl}
@@ -43,6 +106,15 @@ const Grid: React.FC = () => {
       style={{
         gridTemplateColumns: `auto repeat(${width}, ${l}vmin)`,
         gridTemplateRows: `auto repeat(${height}, ${l}vmin)`,
+      }}
+      onMouseDown={() => {
+        firstPos.current = null;
+        direction.current = null;
+      }}
+      onMouseMove={(e) => {
+        if (e.buttons) {
+          moveHandler(e.clientX, e.clientY);
+        }
       }}
     >
       <div></div>

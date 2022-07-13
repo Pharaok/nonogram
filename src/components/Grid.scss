@@ -1,6 +1,7 @@
 @import "../variables";
 
 .grid {
+  touch-action: manipulation;
   font-family: "Roboto Mono", monospace;
   display: grid;
   user-select: none;
