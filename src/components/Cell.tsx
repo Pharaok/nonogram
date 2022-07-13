@@ -24,7 +24,7 @@ const Cell: React.FC<Props> = ({ y, x, readonly = false }) => {
   const dispatch = useNonogramDispatch();
 
   return (
-    <div
+    <button
       style={{
         gridArea: `${y + 2} / ${x + 2}`,
         transitionDelay: `${(x + y) * 50}ms`,
@@ -51,7 +51,7 @@ const Cell: React.FC<Props> = ({ y, x, readonly = false }) => {
       onContextMenu={(e) => {
         e.preventDefault();
       }}
-    ></div>
+    ></button>
   );
 };
 

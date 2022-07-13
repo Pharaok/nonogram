@@ -46,15 +46,13 @@ const Grid: React.FC = () => {
     gridEl.current?.addEventListener(
       "touchend",
       (e) => {
-        if ((e.target as HTMLElement).classList.contains("cell")) {
+        if ((e.target as HTMLElement).tagName === "BUTTON") {
           e.preventDefault();
-          firstPos.current = null;
-          direction.current = null;
         }
       },
       { passive: false }
     );
-  });
+  }, []);
 
   const moveHandler = (clientX: number, clientY: number) => {
     const target = document.elementFromPoint(clientX, clientY);
