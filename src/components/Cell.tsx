@@ -48,9 +48,6 @@ const Cell: React.FC<Props> = ({ y, x, readonly = false }) => {
         dispatch(paintCell(x, y, brush));
         dispatch(setBrush(brush));
       }}
-      onContextMenu={(e) => {
-        e.preventDefault();
-      }}
     ></button>
   );
 };

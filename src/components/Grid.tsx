@@ -7,6 +7,20 @@ import Cell from "./Cell";
 import Clue from "./Clue";
 import { createClues } from "../helpers";
 import { paintCell } from "./slices/nonogram";
+import { current } from "immer";
+
+const posFromClient = (clientX: number, clientY: number) => {
+  const target = document.elementFromPoint(clientX, clientY);
+  const m = target
+    ?.getAttribute("style")
+    ?.match(/grid-area:\s*(\d+)\s*\/\s*(\d+)\s*;/);
+  if (m) {
+    return m
+      .slice(1)
+      .map((x) => Number(x) - 2)
+      .reverse() as [number, number];
+  }
+};
 
 const Grid: React.FC = () => {
   const gridEl: React.Ref<HTMLDivElement> = useRef(null);
@@ -15,7 +29,7 @@ const Grid: React.FC = () => {
   const brush = useNonogramSelector((state) => state.brush);
   const [solved, setSolved] = useState(false);
   const dispatch = useNonogramDispatch();
-  const firstPos = useRef<[number, number] | null>(null);
+  const firstPos = useRef<[number, number]>([-1, -1]);
   const direction = useRef<number | null>(null);
 
   const width = grid[0].length;
@@ -55,28 +69,30 @@ const Grid: React.FC = () => {
   }, []);
 
   const moveHandler = (clientX: number, clientY: number) => {
-    const target = document.elementFromPoint(clientX, clientY);
-    const m = target
-      ?.getAttribute("style")
-      ?.match(/grid-area:\s*(\d+)\s*\/\s*(\d+)\s*;/);
-    if (m) {
-      const pos = m
-        .slice(1)
-        .map((x) => Number(x) - 2)
-        .reverse() as [number, number];
-      if (firstPos.current === null) {
-        firstPos.current = pos;
-      } else if (
+    const pos = posFromClient(clientX, clientY);
+    if (pos) {
+      if (
         !isEqual(pos, firstPos.current) &&
         zip(pos, firstPos.current).some((v) => v[0] === v[1]) &&
         direction.current === null
       ) {
-        const dx = Math.abs(firstPos.current[0] - pos[0]);
-        const dy = Math.abs(firstPos.current[1] - pos[1]);
-        direction.current = +(dx > dy);
+        zip(firstPos.current, pos).forEach((v, i) => {
+          if (v[0]! - v[1]!) {
+            direction.current = i;
+          }
+        });
       } else if (direction.current !== null) {
-        pos[direction.current] = firstPos.current[direction.current];
-        dispatch(paintCell(pos[0], pos[1], brush));
+        pos[+!direction.current] = firstPos.current[+!direction.current];
+        const [start, stop] = [
+          pos[direction.current],
+          firstPos.current[direction.current],
+        ].sort();
+        for (let i = start; i <= stop; i++) {
+          pos[direction.current] = i;
+          if (grid[pos[1]][pos[0]] !== brush) {
+            dispatch(paintCell(pos[0], pos[1], brush));
+          }
+        }
       }
     }
   };
@@ -105,14 +121,20 @@ const Grid: React.FC = () => {
         gridTemplateColumns: `auto repeat(${width}, ${l}vmin)`,
         gridTemplateRows: `auto repeat(${height}, ${l}vmin)`,
       }}
-      onMouseDown={() => {
-        firstPos.current = null;
-        direction.current = null;
+      onMouseDown={(e) => {
+        const pos = posFromClient(e.clientX, e.clientY);
+        if (pos) {
+          firstPos.current = pos;
+          direction.current = null;
+        }
       }}
       onMouseMove={(e) => {
         if (e.buttons) {
           moveHandler(e.clientX, e.clientY);
         }
+      }}
+      onContextMenu={(e) => {
+        e.preventDefault();
       }}
     >
       <div></div>
