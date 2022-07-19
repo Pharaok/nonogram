@@ -7,7 +7,6 @@ import Cell from "./Cell";
 import Clue from "./Clue";
 import { createClues } from "../helpers";
 import { paintCell } from "./slices/nonogram";
-import { current } from "immer";
 
 const posFromClient = (clientX: number, clientY: number) => {
   const target = document.elementFromPoint(clientX, clientY);
@@ -29,6 +28,7 @@ const Grid: React.FC = () => {
   const brush = useNonogramSelector((state) => state.brush);
   const [solved, setSolved] = useState(false);
   const dispatch = useNonogramDispatch();
+
   const firstPos = useRef<[number, number]>([-1, -1]);
   const direction = useRef<number | null>(null);
 
@@ -56,18 +56,6 @@ const Grid: React.FC = () => {
     );
   }, [grid]);
 
-  useEffect(() => {
-    gridEl.current?.addEventListener(
-      "touchend",
-      (e) => {
-        if ((e.target as HTMLElement).tagName === "BUTTON") {
-          e.preventDefault();
-        }
-      },
-      { passive: false }
-    );
-  }, []);
-
   const moveHandler = (clientX: number, clientY: number) => {
     const pos = posFromClient(clientX, clientY);
     if (pos) {
@@ -77,7 +65,7 @@ const Grid: React.FC = () => {
         direction.current === null
       ) {
         zip(firstPos.current, pos).forEach((v, i) => {
-          if (v[0]! - v[1]!) {
+          if (v[0] !== v[1]) {
             direction.current = i;
           }
         });
@@ -98,20 +86,25 @@ const Grid: React.FC = () => {
   };
 
   useEffect(() => {
-    const touchMoveHandler = (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        e.preventDefault();
-        moveHandler(e.touches[0].clientX, e.touches[0].clientY);
-      }
-    };
+    gridEl.current?.addEventListener(
+      "touchmove",
+      (e) => {
+        if (e.touches.length === 1) {
+          e.preventDefault();
+          moveHandler(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      },
+      { passive: false }
+    );
 
-    gridEl.current?.addEventListener("touchmove", touchMoveHandler, {
-      passive: false,
-    });
-    return () => {
-      gridEl.current?.removeEventListener("touchmove", touchMoveHandler);
-    };
-  }, [brush]);
+    gridEl.current?.addEventListener(
+      "touchend",
+      (e) => {
+        e.preventDefault();
+      },
+      { passive: false }
+    );
+  }, []);
 
   return (
     <div
