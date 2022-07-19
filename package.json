@@ -13,6 +13,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.8.3",
     "immer": "^9.0.15",
     "lodash-es": "^4.17.21",
     "normalize.css": "^8.0.1",
