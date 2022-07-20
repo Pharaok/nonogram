@@ -1,4 +1,5 @@
 import produce from "immer";
+import { createClues } from "../../helpers";
 
 const SET_BRUSH = "SET_BRUSH";
 const PAINT_CELL = "PAINT_CELL";
@@ -8,7 +9,7 @@ const SET_GRID = "SET_GRID";
 
 interface SetBrushAction {
   type: typeof SET_BRUSH;
-  payload: number;
+  payload: { brush: number };
 }
 interface PaintCellAction {
   type: typeof PAINT_CELL;
@@ -34,11 +35,13 @@ interface ClearAction {
 interface State {
   grid: number[][];
   solution: number[][];
+  clues: number[][][];
   brush: number;
 }
 const initialState: State = {
   grid: [[0]],
   solution: [[1]],
+  clues: [[[1]], [[1]]],
   brush: 0,
 };
 
@@ -49,9 +52,9 @@ type Actions =
   | setGridAction
   | ClearAction;
 
-export const setBrush = (b: number) => ({
+export const setBrush = (brush: number) => ({
   type: SET_BRUSH,
-  payload: b,
+  payload: { brush },
 });
 export const paintCell = (x: number, y: number, brush: number) => ({
   type: PAINT_CELL,
@@ -71,7 +74,7 @@ const nonogram = (prevState = initialState, action: Actions) => {
   return produce(prevState, (draft) => {
     switch (action.type) {
       case SET_BRUSH:
-        draft.brush = action.payload;
+        draft.brush = action.payload.brush;
         break;
       case PAINT_CELL: {
         const [y, x] = action.payload.path;
@@ -95,6 +98,12 @@ const nonogram = (prevState = initialState, action: Actions) => {
         }
 
         draft.solution = action.payload.solution;
+        draft.clues = [
+          draft.solution.map((row) => createClues(row)),
+          draft.solution[0].map((cell, x) =>
+            createClues(draft.solution.map((row) => row[x]))
+          ),
+        ];
         break;
       }
       case SET_GRID: {
@@ -110,6 +119,7 @@ const nonogram = (prevState = initialState, action: Actions) => {
             newSolution.push(Array.from(Array(width), () => 0));
           }
         }
+        break;
       }
     }
   });

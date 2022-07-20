@@ -25,6 +25,7 @@ const Grid: React.FC = () => {
   const gridEl: React.Ref<HTMLDivElement> = useRef(null);
   const grid = useNonogramSelector((state) => state.grid);
   const solution = useNonogramSelector((state) => state.solution);
+  const clues = useNonogramSelector((state) => state.clues);
   const brush = useNonogramSelector((state) => state.brush);
   const [solved, setSolved] = useState(false);
   const dispatch = useNonogramDispatch();
@@ -35,14 +36,6 @@ const Grid: React.FC = () => {
   const width = grid[0].length;
   const height = grid.length;
   const l = 60 / Math.max(width, height);
-
-  const clues = useMemo(
-    () => [
-      solution.map((row) => createClues(row)),
-      solution[0].map((cell, x) => createClues(solution.map((row) => row[x]))),
-    ],
-    [solution]
-  );
 
   useEffect(() => {
     setSolved(
@@ -134,14 +127,14 @@ const Grid: React.FC = () => {
       {grid[0].map((cell, x) => (
         <Clue
           cells={grid.map((row) => row[x])}
-          solution={solution.map((row) => row[x])}
+          index={x}
           orientation="vertical"
           key={x}
         />
       ))}
       {grid.map((row, y) => (
         <React.Fragment key={y}>
-          <Clue cells={row} solution={solution[y]} orientation="horizontal" />
+          <Clue cells={row} index={y} orientation="horizontal" />
           {row.map((cell, x) => (
             <Cell x={x} y={y} readonly={solved} key={x} />
           ))}
