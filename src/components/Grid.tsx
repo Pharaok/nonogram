@@ -6,7 +6,7 @@ import "./Grid.scss";
 import Cell from "./Cell";
 import Clue from "./Clue";
 import { createClues } from "../helpers";
-import { paintCell } from "./slices/nonogram";
+import { paintCell } from "../slices/nonogram";
 
 const posFromClient = (clientX: number, clientY: number) => {
   const target = document.elementFromPoint(clientX, clientY);

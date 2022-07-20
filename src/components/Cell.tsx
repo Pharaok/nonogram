@@ -1,7 +1,7 @@
 import React from "react";
 import { useNonogramDispatch, useNonogramSelector } from "./hooks";
 import "./Cell.scss";
-import { paintCell, setBrush } from "./slices/nonogram";
+import { paintCell, setBrush } from "../slices/nonogram";
 
 type Props = {
   x: number;

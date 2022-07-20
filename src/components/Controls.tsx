@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 
 import "./Controls.scss";
-import { clear } from "./slices/nonogram";
+import { clear } from "../slices/nonogram";
 import { Brushes } from "./Cell";
 import NonogramForm from "./NonogramForm";
 

@@ -1,5 +1,5 @@
 import produce from "immer";
-import { createClues } from "../../helpers";
+import { createClues } from "../helpers";
 
 const SET_BRUSH = "SET_BRUSH";
 const PAINT_CELL = "PAINT_CELL";

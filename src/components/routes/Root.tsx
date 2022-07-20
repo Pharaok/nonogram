@@ -5,7 +5,7 @@ import { Brushes } from "../Cell";
 import Controls from "../Controls";
 import Grid from "../Grid";
 import { useNonogramDispatch } from "../hooks";
-import { clear, setSolution } from "../slices/nonogram";
+import { clear, setSolution } from "../../slices/nonogram";
 
 import "./Root.scss";
 
