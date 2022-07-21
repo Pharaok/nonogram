@@ -34,7 +34,7 @@ const Grid: React.FC = () => {
   const dispatch = useNonogramDispatch();
 
   const firstPos = useRef<[number, number]>([-1, -1]);
-  const direction = useRef<number | null>(null);
+  const axis = useRef<number | null>(null);
 
   const width = grid[0].length;
   const height = grid.length;
@@ -43,24 +43,25 @@ const Grid: React.FC = () => {
   const moveHandler = (clientX: number, clientY: number, brush: number) => {
     const pos = posFromClient(clientX, clientY);
     if (pos) {
-      if (
-        !isEqual(pos, firstPos.current) &&
-        zip(pos, firstPos.current).some((v) => v[0] === v[1]) &&
-        direction.current === null
-      ) {
-        zip(firstPos.current, pos).forEach((v, i) => {
-          if (v[0] !== v[1]) {
-            direction.current = i;
-          }
-        });
-      } else if (direction.current !== null) {
-        pos[+!direction.current] = firstPos.current[+!direction.current];
-        const [start, stop] = [
-          pos[direction.current],
-          firstPos.current[direction.current],
-        ].sort();
+      let diffCount = 0;
+      let diffAxis = -1;
+      zip(firstPos.current, pos).forEach((v, i) => {
+        if (v[0] !== v[1]) {
+          diffCount++;
+          diffAxis = i;
+        }
+      });
+      if (diffCount === 1) {
+        axis.current = diffAxis;
+      }
+      if (axis.current !== null) {
+        const a = axis.current;
+        pos[+!a] = firstPos.current[+!a]; // lock the other axis
+        const [start, stop] = [firstPos.current[a], pos[a]].sort();
+        // paint all cells between the first pos and the
+        // current pos to compensate for move event skippig.
         for (let i = start; i <= stop; i++) {
-          pos[direction.current] = i;
+          pos[a] = i;
           if (grid[pos[1]][pos[0]] !== brush) {
             dispatch(paintCell(pos[0], pos[1], brush));
           }
@@ -106,7 +107,7 @@ const Grid: React.FC = () => {
         const pos = posFromClient(e.clientX, e.clientY);
         if (pos) {
           firstPos.current = pos;
-          direction.current = null;
+          axis.current = null;
         }
       }}
       onTouchStart={(e) => {
@@ -114,7 +115,7 @@ const Grid: React.FC = () => {
         const pos = posFromClient(t.clientX, t.clientY);
         if (pos) {
           firstPos.current = pos;
-          direction.current = null;
+          axis.current = null;
         }
       }}
       onMouseMove={(e) => {
