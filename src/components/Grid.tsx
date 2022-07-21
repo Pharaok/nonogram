@@ -8,10 +8,11 @@ import Clue from "./Clue";
 import { paintCell } from "../slices/nonogram";
 
 const posFromClient = (clientX: number, clientY: number) => {
+  // TODO: find a better way to get grid coordinates
   const target = document.elementFromPoint(clientX, clientY);
   const m = target
     ?.getAttribute("style")
-    ?.match(/grid-area:\s*(\d+)\s*\/\s*(\d+)\s*;/);
+    ?.match(/grid-area:\s*(\d+)\s*\/\s*(\d+)\s*/);
   if (m) {
     return m
       .slice(1)
@@ -74,6 +75,13 @@ const Grid: React.FC = () => {
     const touchMoveHandler = (e: TouchEvent) => {
       if (e.touches.length === 1) {
         e.preventDefault();
+        console.log(
+          "grid",
+          "touchmove",
+          e.touches[0].clientX,
+          e.touches[0].clientY,
+          brush
+        );
         moveHandler(e.touches[0].clientX, e.touches[0].clientY, brush);
       }
     };
@@ -144,7 +152,6 @@ const Grid: React.FC = () => {
         className="background"
         style={{ gridArea: `2 / 2 / ${2 + height} / ${2 + width}` }}
         viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="none"
       >
         {solution.map((row, y) =>
           row.map((cell, x) =>
