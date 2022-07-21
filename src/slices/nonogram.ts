@@ -1,5 +1,5 @@
 import produce from "immer";
-import { createClues } from "../helpers";
+import { createClues, createGridClues } from "../helpers";
 
 const SET_BRUSH = "SET_BRUSH";
 const PAINT_CELL = "PAINT_CELL";
@@ -35,13 +35,15 @@ interface ClearAction {
 interface State {
   grid: number[][];
   solution: number[][];
-  clues: number[][][];
+  clues: number[][][]; // [axis][index][clue]
+  cluesFromGrid: number[][][]; // [axis][index][clue]
   brush: number;
 }
 const initialState: State = {
   grid: [[0]],
   solution: [[1]],
   clues: [[[1]], [[1]]],
+  cluesFromGrid: [[[0]], [[0]]],
   brush: 0,
 };
 
@@ -79,6 +81,10 @@ const nonogram = (prevState = initialState, action: Actions) => {
       case PAINT_CELL: {
         const [y, x] = action.payload.path;
         draft.grid[y][x] = action.payload.brush;
+        draft.cluesFromGrid[0][y] = createClues(draft.grid[y]);
+        draft.cluesFromGrid[1][x] = createClues(
+          draft.grid.map((row) => row[x])
+        );
         break;
       }
       case CLEAR:
@@ -87,38 +93,13 @@ const nonogram = (prevState = initialState, action: Actions) => {
         );
         break;
       case SET_SOLUTION: {
-        const height = action.payload.solution.length;
-        const width = action.payload.solution[0].length;
-        if (height !== draft.grid.length || width !== draft.grid[0].length) {
-          const newGrid = [];
-          for (let i = 0; i < height; i++) {
-            newGrid.push(Array.from(Array(width), () => 0));
-          }
-          draft.grid = newGrid;
-        }
-
         draft.solution = action.payload.solution;
-        draft.clues = [
-          draft.solution.map((row) => createClues(row)),
-          draft.solution[0].map((cell, x) =>
-            createClues(draft.solution.map((row) => row[x]))
-          ),
-        ];
+        draft.clues = createGridClues(draft.solution);
         break;
       }
       case SET_GRID: {
         draft.grid = action.payload.grid;
-        const height = action.payload.grid.length;
-        const width = action.payload.grid[0].length;
-        if (
-          height !== draft.solution.length ||
-          width !== draft.solution[0].length
-        ) {
-          const newSolution = [];
-          for (let i = 0; i < height; i++) {
-            newSolution.push(Array.from(Array(width), () => 0));
-          }
-        }
+        draft.cluesFromGrid = createGridClues(draft.grid);
         break;
       }
     }

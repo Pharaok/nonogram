@@ -49,3 +49,10 @@ export const createClues = (cells: number[]) => {
   }
   return clues;
 };
+
+export const createGridClues = (grid: number[][]) => {
+  return [
+    grid.map((row) => createClues(row)),
+    grid[0].map((cell, x) => createClues(grid.map((row) => row[x]))),
+  ];
+};

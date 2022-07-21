@@ -5,7 +5,6 @@ import { useNonogramDispatch, useNonogramSelector } from "./hooks";
 import "./Grid.scss";
 import Cell from "./Cell";
 import Clue from "./Clue";
-import { createClues } from "../helpers";
 import { paintCell } from "../slices/nonogram";
 
 const posFromClient = (clientX: number, clientY: number) => {
@@ -26,8 +25,12 @@ const Grid: React.FC = () => {
   const grid = useNonogramSelector((state) => state.grid);
   const solution = useNonogramSelector((state) => state.solution);
   const clues = useNonogramSelector((state) => state.clues);
+  const cluesFromGrid = useNonogramSelector((state) => state.cluesFromGrid);
   const brush = useNonogramSelector((state) => state.brush);
-  const [solved, setSolved] = useState(false);
+  const solved = useMemo(
+    () => isEqual(cluesFromGrid, clues),
+    [cluesFromGrid, clues]
+  );
   const dispatch = useNonogramDispatch();
 
   const firstPos = useRef<[number, number]>([-1, -1]);
@@ -36,18 +39,6 @@ const Grid: React.FC = () => {
   const width = grid[0].length;
   const height = grid.length;
   const l = 60 / Math.max(width, height);
-
-  useEffect(() => {
-    setSolved(
-      isEqual(
-        [
-          grid.map((row) => createClues(row)),
-          grid[0].map((cell, x) => createClues(grid.map((row) => row[x]))),
-        ],
-        clues
-      )
-    );
-  }, [grid]);
 
   const moveHandler = (clientX: number, clientY: number) => {
     const pos = posFromClient(clientX, clientY);
@@ -125,16 +116,11 @@ const Grid: React.FC = () => {
     >
       <div></div>
       {grid[0].map((cell, x) => (
-        <Clue
-          cells={grid.map((row) => row[x])}
-          index={x}
-          orientation="vertical"
-          key={x}
-        />
+        <Clue orientation="vertical" index={x} key={x} />
       ))}
       {grid.map((row, y) => (
         <React.Fragment key={y}>
-          <Clue cells={row} index={y} orientation="horizontal" />
+          <Clue orientation="horizontal" index={y} />
           {row.map((cell, x) => (
             <Cell x={x} y={y} readonly={solved} key={x} />
           ))}

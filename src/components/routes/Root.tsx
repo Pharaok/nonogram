@@ -5,7 +5,7 @@ import { Brushes } from "../Cell";
 import Controls from "../Controls";
 import Grid from "../Grid";
 import { useNonogramDispatch } from "../hooks";
-import { clear, setSolution } from "../../slices/nonogram";
+import { clear, setGrid, setSolution } from "../../slices/nonogram";
 
 import "./Root.scss";
 
@@ -28,6 +28,7 @@ const Root = () => {
       }
     }
     dispatch(setSolution(solution));
+    dispatch(setGrid(solution.map((row) => Array.from(row, () => 0))));
     dispatch(clear(Brushes.All));
   }, [width, height, seed]);
   return (

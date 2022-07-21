@@ -1,19 +1,19 @@
 import React from "react";
-import { createClues } from "../helpers";
 import "./Clue.scss";
 import { useNonogramSelector } from "./hooks";
 
 type Props = {
-  cells: number[];
-  index: number;
   orientation: "vertical" | "horizontal";
+  index: number;
 };
 
-const Clue: React.FC<Props> = ({ cells, index, orientation }) => {
+const Clue: React.FC<Props> = ({ orientation, index }) => {
   const clues = useNonogramSelector(
     (state) => state.clues[+(orientation === "vertical")][index]
   );
-  const cluesFromGrid = createClues(cells);
+  const cluesFromGrid = useNonogramSelector(
+    (state) => state.cluesFromGrid[+(orientation === "vertical")][index]
+  );
 
   let i = -1;
   let prev = -1;
