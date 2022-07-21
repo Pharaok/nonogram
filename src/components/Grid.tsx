@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { isEqual, zip } from "lodash-es";
 import { useNonogramDispatch, useNonogramSelector } from "./hooks";
 
@@ -40,7 +40,7 @@ const Grid: React.FC = () => {
   const height = grid.length;
   const l = 60 / Math.max(width, height);
 
-  const moveHandler = (clientX: number, clientY: number) => {
+  const moveHandler = (clientX: number, clientY: number, brush: number) => {
     const pos = posFromClient(clientX, clientY);
     if (pos) {
       if (
@@ -70,17 +70,21 @@ const Grid: React.FC = () => {
   };
 
   useEffect(() => {
-    gridEl.current?.addEventListener(
-      "touchmove",
-      (e) => {
-        if (e.touches.length === 1) {
-          e.preventDefault();
-          moveHandler(e.touches[0].clientX, e.touches[0].clientY);
-        }
-      },
-      { passive: false }
-    );
+    const touchMoveHandler = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        e.preventDefault();
+        moveHandler(e.touches[0].clientX, e.touches[0].clientY, brush);
+      }
+    };
+    gridEl.current?.addEventListener("touchmove", touchMoveHandler, {
+      passive: false,
+    });
+    return () => {
+      gridEl.current?.removeEventListener("touchmove", touchMoveHandler);
+    };
+  }, [brush]);
 
+  useEffect(() => {
     gridEl.current?.addEventListener(
       "touchend",
       (e) => {
@@ -105,9 +109,17 @@ const Grid: React.FC = () => {
           direction.current = null;
         }
       }}
+      onTouchStart={(e) => {
+        const t = e.touches[0];
+        const pos = posFromClient(t.clientX, t.clientY);
+        if (pos) {
+          firstPos.current = pos;
+          direction.current = null;
+        }
+      }}
       onMouseMove={(e) => {
         if (e.buttons) {
-          moveHandler(e.clientX, e.clientY);
+          moveHandler(e.clientX, e.clientY, brush);
         }
       }}
       onContextMenu={(e) => {
