@@ -102,6 +102,7 @@ const Grid: React.FC = () => {
       style={{
         gridTemplateColumns: `auto repeat(${width}, ${l}vmin)`,
         gridTemplateRows: `auto repeat(${height}, ${l}vmin)`,
+        fontSize: `${l / 2}vmin`,
       }}
       onMouseDown={(e) => {
         const pos = posFromClient(e.clientX, e.clientY);
